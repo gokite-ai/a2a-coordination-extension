@@ -1,0 +1,5 @@
+{
+  "member": "termsHash",
+  "canonical": "{\"acceptanceCriteria\":\"it is a haiku\",\"buyerAgentId\":\"did:kite:acme:buyer-17\",\"deadlines\":{\"deliveryDeadline\":172800,\"fundingTimeout\":3600,\"reviewWindow\":86400},\"deliverable\":\"one haiku about escrow\",\"disputePolicy\":{\"arbiterAgentId\":\"did:kite:arbiterco:arbiter-01\"},\"escrow\":{\"payoutAddress\":\"0x3333333333333333333333333333333333333333\"},\"price\":{\"amount\":\"25.00\",\"asset\":\"USDC\"},\"runtimeBinding\":{\"agentCardHash\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"endpoint\":\"https://passport.dev.gokite.ai/a2a/v1\",\"extensionUri\":\"https://a2a.gokite.ai/extensions/coordination-workflow/v1\",\"runtimeAgentId\":\"did:kite:kite:coordination-engine\"},\"schema\":\"https://a2a.gokite.ai/schemas/deal-contract/v1\",\"sellerAgentId\":\"did:kite:haiku:seller-3\",\"template\":\"fixed_outcome/v1\"}",
+  "hash": "sha256:f45f1e8ee735e4a3d9798946e8f847830d9dcd51ee3632aebc08aa7b3c86bc93"
+}

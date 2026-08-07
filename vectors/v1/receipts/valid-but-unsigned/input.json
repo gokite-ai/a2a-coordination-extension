@@ -1,0 +1,11 @@
+{
+  "schema": "https://a2a.gokite.ai/schemas/agreement-transition-receipt/v1",
+  "receiptId": "atr_03",
+  "dealId": "deal_0123456789ab",
+  "fromState": "PROPOSED",
+  "toState": "COMMITTED",
+  "revision": 1,
+  "recordedAt": "2026-08-07T08:00:00Z",
+  "auditStatus": "pending",
+  "runtimeSignature": null
+}

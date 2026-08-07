@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2a.gokite.ai/schemas/agreement-error-catalog/v1",
+  "title": "Agreement error catalog",
+  "description": "DRAFT — normative error codes a conforming Runtime returns, with retry semantics. retriable=false means retrying the identical request cannot succeed; fix the input or the state first.",
+  "type": "object",
+  "errors": [
+    { "code": "invalid_command_schema", "retriable": false, "description": "Command failed JSON Schema validation for its declared schema/version." },
+    { "code": "unsupported_extension_version", "retriable": false, "description": "Extension or template version not supported; fails before agreement acceptance." },
+    { "code": "invalid_signature", "retriable": false, "description": "Signature does not verify against the resolved actor key, profile, and domain-separation tag." },
+    { "code": "unknown_key", "retriable": false, "description": "keyId does not resolve, or was not valid at command time." },
+    { "code": "unauthorized_actor", "retriable": false, "description": "Actor is not a participant of the deal, or lacks authority for this command type." },
+    { "code": "unknown_deal", "retriable": false, "description": "dealId does not resolve." },
+    { "code": "terms_hash_mismatch", "retriable": false, "description": "Command's termsHash does not match the accepted contract." },
+    { "code": "payload_hash_mismatch", "retriable": false, "description": "Runtime's independently recomputed payload hash differs from the claimed one." },
+    { "code": "revision_conflict", "retriable": true, "description": "expectedRevision is stale; refetch state and resubmit with the current revision." },
+    { "code": "idempotency_conflict", "retriable": false, "description": "commandId reused with different immutable bytes; rejected and audited." },
+    { "code": "illegal_transition", "retriable": false, "description": "commandType is not legal from the deal's current state under the pinned template." },
+    { "code": "deadline_exceeded", "retriable": false, "description": "The relevant platform window has elapsed; the deadline edge governs." },
+    { "code": "evidence_not_validated", "retriable": false, "description": "Referenced evidence manifest is missing or failed intake validation." },
+    { "code": "funding_not_final", "retriable": true, "description": "Funding not yet at chain finality; broadcast is not finality." },
+    { "code": "rate_limited", "retriable": true, "description": "Too many requests; honor Retry-After." },
+    { "code": "internal_error", "retriable": true, "description": "Transient Runtime failure; safe to retry idempotently with the same commandId." }
+  ]
+}

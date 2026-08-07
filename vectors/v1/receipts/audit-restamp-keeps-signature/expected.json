@@ -1,0 +1,7 @@
+{
+  "signatureValid": true,
+  "recoveredAddress": "0x5cbdd86a2fa8dc4bddd8a8f69dba48572eec07fb",
+  "sameSignatureAs": "receipts/valid-command-driven",
+  "auditStatusSigned": false,
+  "warning": "auditStatus and auditReceiptRef are OUTSIDE the signature. A relay can set \"recorded\" and this still verifies — durability is proven by the referenced Audit receipt, never by this field."
+}

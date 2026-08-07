@@ -1,0 +1,7 @@
+{
+  "schemaValid": true,
+  "firstOutcome": "accepted",
+  "secondOutcome": "rejected",
+  "errorCode": "idempotency_conflict",
+  "note": "same commandId, different bytes. An IDENTICAL replay would instead return the first result unchanged."
+}

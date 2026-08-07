@@ -1,0 +1,5 @@
+{
+  "member": "termsHash",
+  "canonical": "{\"acceptanceCriteria\":\"line1\\nline2\\ttabbed\",\"buyerAgentId\":\"did:kite:acme:buyer-17\",\"deliverable\":\"one haiku about escrow — 关于托管的俳句 éè \\\"quoted\\\" \\\\ backslash\",\"disputePolicy\":{\"arbiterAgentId\":\"did:kite:arbiterco:arbiter-01\"},\"escrow\":{\"payoutAddress\":\"0x3333333333333333333333333333333333333333\"},\"price\":{\"amount\":\"25.00\",\"asset\":\"USDC\"},\"runtimeBinding\":{\"agentCardHash\":\"sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\"endpoint\":\"https://passport.dev.gokite.ai/a2a/v1\",\"extensionUri\":\"https://a2a.gokite.ai/extensions/coordination-workflow/v1\",\"runtimeAgentId\":\"did:kite:kite:coordination-engine\"},\"schema\":\"https://a2a.gokite.ai/schemas/deal-contract/v1\",\"sellerAgentId\":\"did:kite:haiku:seller-3\",\"template\":\"fixed_outcome/v1\"}",
+  "hash": "sha256:46d4bf4bf2b6057bb68a0f1472491b4005a7c11ce83ccde457e1958a4577121f"
+}

@@ -1,0 +1,236 @@
+{
+  "version": "v1",
+  "profile": "secp256k1-keccak-v1",
+  "domainTags": {
+    "terms": "kite:a2a-agreement:terms:v1",
+    "command": "kite:a2a-agreement:command:v1",
+    "funding": "kite:a2a-agreement:funding:v1",
+    "receipt": "kite:a2a-agreement:receipt:v1"
+  },
+  "receiptSignedFields": [
+    "schema",
+    "receiptId",
+    "dealId",
+    "commandId",
+    "commandHash",
+    "fromState",
+    "toState",
+    "revision",
+    "recordedAt"
+  ],
+  "keys": {
+    "buyer": {
+      "privateKey": "0x1111111111111111111111111111111111111111111111111111111111111111",
+      "address": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+      "thumbprint": "jkt:6a5da2aa30d9780a"
+    },
+    "seller": {
+      "privateKey": "0x2222222222222222222222222222222222222222222222222222222222222222",
+      "address": "0x1563915e194d8cfba1943570603f7606a3115508",
+      "thumbprint": "jkt:2cae26c62970654c"
+    },
+    "runtime": {
+      "privateKey": "0x3333333333333333333333333333333333333333333333333333333333333333",
+      "address": "0x5cbdd86a2fa8dc4bddd8a8f69dba48572eec07fb",
+      "thumbprint": "jkt:8c350cb27b3388df"
+    },
+    "stranger": {
+      "privateKey": "0x4444444444444444444444444444444444444444444444444444444444444444",
+      "address": "0x7564105e977516c53be337314c7e53838967bdac",
+      "thumbprint": "jkt:3dd3dd92f44ea78a"
+    }
+  },
+  "note": "Fixture keys are throwaway values generated for these vectors and published on purpose. Never a real Kite, agent, or user key.",
+  "cases": [
+    {
+      "set": "canonical",
+      "name": "deal-contract-minimal",
+      "note": "baseline DealContract: JCS bytes + the termsHash derived from them, with the proposer signature stripped"
+    },
+    {
+      "set": "canonical",
+      "name": "deal-contract-member-order-and-stripping",
+      "note": "wire order is irrelevant; signatures and a declared termsHash are stripped — byte-identical to the baseline"
+    },
+    {
+      "set": "canonical",
+      "name": "deal-contract-integer-members",
+      "note": "integer-valued members: any renumbering changes the bytes and breaks the signature"
+    },
+    {
+      "set": "canonical",
+      "name": "deal-contract-unicode-escaping",
+      "note": "UTF-8 emitted literally; only the JSON-mandated escapes appear"
+    },
+    {
+      "set": "canonical",
+      "name": "agreement-command-basic",
+      "note": "AgreementCommand: canonical signed bytes, with the signature member stripped"
+    },
+    {
+      "set": "signing",
+      "name": "terms-valid-buyer",
+      "note": "DealContract signature: over the termsHash STRING, not its bytes"
+    },
+    {
+      "set": "signing",
+      "name": "terms-valid-seller",
+      "note": "the countersignature: identical termsHash, different key, different recovered address"
+    },
+    {
+      "set": "signing",
+      "name": "command-valid-seller",
+      "note": "AgreementCommand signature"
+    },
+    {
+      "set": "signing",
+      "name": "funding-envelope-valid-buyer",
+      "note": "party envelope for the funding/evidence/proofs interactions (§6.2.1)"
+    },
+    {
+      "set": "signing",
+      "name": "reject-cross-tag-terms-as-command",
+      "note": "a terms signature presented as a command signature MUST NOT verify — the tags separate the families"
+    },
+    {
+      "set": "signing",
+      "name": "reject-cross-tag-command-as-terms",
+      "note": "and the reverse"
+    },
+    {
+      "set": "signing",
+      "name": "reject-cross-tag-funding-as-command",
+      "note": "the §6.2.1 funding tag is separated from the command tag too"
+    },
+    {
+      "set": "signing",
+      "name": "reject-wrong-key",
+      "note": "cryptographically valid, but recovers to an address the named agent does not hold"
+    },
+    {
+      "set": "signing",
+      "name": "reject-mutated-body",
+      "note": "body changed after signing — recovery yields an unrelated address"
+    },
+    {
+      "set": "signing",
+      "name": "reject-bare-hex-no-0x",
+      "note": "the profile fixes one spelling: 0x-prefixed 65-byte r‖s‖v. Bare hex is rejected, not guessed at"
+    },
+    {
+      "set": "signing",
+      "name": "reject-legacy-recovery-id",
+      "note": "wire v is 27/28; the raw 0/1 recovery id MUST be rejected, not silently normalized"
+    },
+    {
+      "set": "signing",
+      "name": "reject-truncated-signature",
+      "note": "a signature that is not exactly 65 bytes is malformed"
+    },
+    {
+      "set": "commands",
+      "name": "valid-delivered",
+      "note": "kite.contract.delivered: schema-valid and correctly signed by the seller"
+    },
+    {
+      "set": "commands",
+      "name": "valid-accepted",
+      "note": "kite.contract.accepted: schema-valid and correctly signed by the buyer"
+    },
+    {
+      "set": "commands",
+      "name": "valid-rejected",
+      "note": "kite.contract.rejected: schema-valid and correctly signed by the buyer"
+    },
+    {
+      "set": "commands",
+      "name": "valid-appealed",
+      "note": "kite.contract.appealed: schema-valid and correctly signed by the seller"
+    },
+    {
+      "set": "commands",
+      "name": "valid-refund-consented",
+      "note": "kite.contract.refund_consented: schema-valid and correctly signed by the seller"
+    },
+    {
+      "set": "commands",
+      "name": "valid-arbiter-decided",
+      "note": "kite.contract.arbiter_decided: schema-valid and correctly signed by the buyer"
+    },
+    {
+      "set": "commands",
+      "name": "invalid-unknown-command-type",
+      "note": "commandType is a closed enum — an unknown type is rejected at the schema, before any state logic"
+    },
+    {
+      "set": "commands",
+      "name": "invalid-missing-payload-hash",
+      "note": "payloadHash is required: without it a Runtime cannot tell a swapped payload from a bad signature"
+    },
+    {
+      "set": "commands",
+      "name": "invalid-negative-revision",
+      "note": "expectedRevision is a non-negative integer"
+    },
+    {
+      "set": "commands",
+      "name": "invalid-command-id-shape",
+      "note": "commandId must match ^cmd_[A-Za-z0-9]+$ — it is an idempotency key, not free text"
+    },
+    {
+      "set": "commands",
+      "name": "invalid-additional-member",
+      "note": "additionalProperties is false: an unknown member would sit inside the signature but outside every implementation's understanding of it"
+    },
+    {
+      "set": "commands",
+      "name": "invalid-actor-not-a-did",
+      "note": "actorAgentId must be a did:kite DID — a bare id cannot be resolved to a key"
+    },
+    {
+      "set": "commands",
+      "name": "invalid-terms-hash-spelling",
+      "note": "hash references are the sha256:<64 lowercase hex> string form throughout"
+    },
+    {
+      "set": "commands",
+      "name": "conflict-idempotency-divergent-replay",
+      "note": "reusing a commandId with different content is a conflict, not a retry — both bodies are schema-valid"
+    },
+    {
+      "set": "commands",
+      "name": "conflict-stale-revision",
+      "note": "expectedRevision behind the agreement: the actor signed against a state that has since moved"
+    },
+    {
+      "set": "receipts",
+      "name": "valid-command-driven",
+      "note": "party-command transition: commandId/commandHash present and inside the signature"
+    },
+    {
+      "set": "receipts",
+      "name": "audit-restamp-keeps-signature",
+      "note": "the audit fields are excluded from the preimage, so a re-stamp reuses the signature — and is therefore not evidence"
+    },
+    {
+      "set": "receipts",
+      "name": "valid-runtime-driven-no-command",
+      "note": "chain observation: commandId/commandHash omitted from the canonical object, never null"
+    },
+    {
+      "set": "receipts",
+      "name": "valid-but-unsigned",
+      "note": "runtimeSignature: null is schema-VALID and a visible non-guarantee — distinct from receipt: null, which means no receipt at all"
+    },
+    {
+      "set": "receipts",
+      "name": "reject-mutated-transition",
+      "note": "toState is inside the preimage: changing the transition breaks the signature"
+    },
+    {
+      "set": "receipts",
+      "name": "reject-signed-by-non-runtime",
+      "note": "a well-formed signature from a key that is not the pinned Runtime key"
+    }
+  ]
+}

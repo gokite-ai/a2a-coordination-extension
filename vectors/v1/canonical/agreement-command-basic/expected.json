@@ -1,0 +1,7 @@
+{
+  "member": "payloadHash",
+  "canonical": "{\"actorAgentId\":\"did:kite:haiku:seller-3\",\"commandId\":\"cmd_01\",\"commandType\":\"kite.contract.delivered\",\"dealId\":\"deal_0123456789ab\",\"expectedRevision\":3,\"occurredAt\":\"2026-08-07T09:30:00Z\",\"payload\":{\"evidenceRef\":\"ev_7f3a\",\"expiry\":1800000000,\"sellerDeliverySig\":\"0xcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd\"},\"payloadHash\":\"sha256:0a54cfc43106fa95e629afe7a086da9aa5a534eaa2a50f64a753c0f8c3c85680\",\"schema\":\"https://a2a.gokite.ai/schemas/agreement-command/v1\",\"termsHash\":\"sha256:feba188b56c1e0deba060f0284f9e26772f20802a8e95578a3a52d028e6308d4\"}",
+  "hash": "sha256:54275c2a6106c5bfc3a4c2590ab29032fe753ebbfa9729b8a25eb42c2016c646",
+  "commandPayloadHash": "sha256:0a54cfc43106fa95e629afe7a086da9aa5a534eaa2a50f64a753c0f8c3c85680",
+  "note": "the command's own payloadHash member covers `payload` alone; `hash` here covers the whole signed body"
+}

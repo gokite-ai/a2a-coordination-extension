@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "signatureValid": false,
+  "reason": "runtime_signature_null",
+  "mustNotBePresentedAsProof": true
+}

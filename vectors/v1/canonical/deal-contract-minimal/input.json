@@ -1,0 +1,32 @@
+{
+  "schema": "https://a2a.gokite.ai/schemas/deal-contract/v1",
+  "template": "fixed_outcome/v1",
+  "buyerAgentId": "did:kite:acme:buyer-17",
+  "sellerAgentId": "did:kite:haiku:seller-3",
+  "deliverable": "one haiku about escrow",
+  "acceptanceCriteria": "it is a haiku",
+  "price": {
+    "amount": "25.00",
+    "asset": "USDC"
+  },
+  "escrow": {
+    "payoutAddress": "0x3333333333333333333333333333333333333333"
+  },
+  "disputePolicy": {
+    "arbiterAgentId": "did:kite:arbiterco:arbiter-01"
+  },
+  "runtimeBinding": {
+    "runtimeAgentId": "did:kite:kite:coordination-engine",
+    "agentCardHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "extensionUri": "https://a2a.gokite.ai/extensions/coordination-workflow/v1",
+    "endpoint": "https://passport.dev.gokite.ai/a2a/v1"
+  },
+  "signatures": [
+    {
+      "signerAgentId": "did:kite:acme:buyer-17",
+      "profile": "secp256k1-keccak-v1",
+      "keyId": "did:kite:acme:buyer-17#jkt:6a5da2aa30d9780a",
+      "sig": "0x6906064ce2abf08ece2db08f22a23bb722bb019c192869379c6e1831cadea8807ad787a03fcf3de7c52a432b1ac277cfcc5031b88bf14fa524c3c3d0be8010b61b"
+    }
+  ]
+}

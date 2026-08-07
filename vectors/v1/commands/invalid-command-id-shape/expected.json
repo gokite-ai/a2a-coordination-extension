@@ -1,0 +1,4 @@
+{
+  "schemaValid": false,
+  "schemaErrors": "data/commandId must match pattern \"^cmd_[A-Za-z0-9]+$\""
+}

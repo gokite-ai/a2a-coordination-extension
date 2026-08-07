@@ -1,0 +1,20 @@
+{
+  "schema": "https://a2a.gokite.ai/schemas/agreement-command/v1",
+  "commandId": "cmd_appealed",
+  "commandType": "kite.contract.appealed",
+  "dealId": "deal_0123456789ab",
+  "expectedRevision": 6,
+  "actorAgentId": "did:kite:haiku:seller-3",
+  "termsHash": "sha256:feba188b56c1e0deba060f0284f9e26772f20802a8e95578a3a52d028e6308d4",
+  "payload": {
+    "sellerAppealSig": "0x1212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212121212",
+    "expiry": 1800000000
+  },
+  "payloadHash": "sha256:ce854d4de2ddda4ed572700cdc325df065771857923ac4d9e145f84dcefc7819",
+  "occurredAt": "2026-08-07T09:30:00Z",
+  "signature": {
+    "profile": "secp256k1-keccak-v1",
+    "keyId": "did:kite:haiku:seller-3#jkt:2cae26c62970654c",
+    "sig": "0x5aa0557f169f2eb339ce71661637cb19b53397ada2f75dba1b174b5d6fbb6d90477cb75c51e27d5bd0442483c4479ca8567a790f70b84423ddfc16b26c2834ab1c"
+  }
+}
