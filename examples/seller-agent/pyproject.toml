@@ -1,0 +1,29 @@
+[project]
+name = "kite-example-seller-agent"
+version = "0.0.1"
+description = "Non-normative example seller agent for the A2A Kite Coordination Extension"
+requires-python = ">=3.10"
+# Deliberately no Kite dependency: official A2A SDK + generic crypto/JSON
+# tooling only. coincurve is libsecp256k1 (recoverable ECDSA) and pycryptodome
+# supplies keccak-256 — the two primitives secp256k1-keccak-v1 needs, both
+# ordinary Ethereum-ecosystem libraries rather than anything Kite-specific. a2a-sdk is pinned to the 0.3 API generation these examples
+# are written against — bump to 1.x deliberately, adapting the imports.
+dependencies = [
+    "a2a-sdk[http-server]>=0.3,<0.4",
+    "uvicorn>=0.30",
+    "httpx>=0.27",
+    "coincurve>=20.0",
+    "pycryptodome>=3.20",
+    "rfc8785>=0.1",
+    "jsonschema>=4.21",
+]
+
+[project.scripts]
+seller-agent = "seller_agent.__main__:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

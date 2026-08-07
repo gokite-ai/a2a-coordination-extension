@@ -1,0 +1,8 @@
+{
+  "profile": "secp256k1-keccak-v1",
+  "domainTag": "kite:a2a-agreement:terms:v1",
+  "signedValue": "sha256:feba188b56c1e0deba060f0284f9e26772f20802a8e95578a3a52d028e6308d4",
+  "preimage": "keccak256(domainTag ‖ signedValue)",
+  "signature": "0xd7a11ac2050b277ed2cab96aee51eda6cfc0564b84447ff78cb3d9a16bd8e8cf15a08b984a119c64042413cedc8350b7ab9adc1161737a4eea7c9508ade936f01c",
+  "claimedSigner": "0x1563915e194d8cfba1943570603f7606a3115508"
+}

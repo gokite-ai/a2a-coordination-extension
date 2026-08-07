@@ -1,0 +1,33 @@
+{
+  "signatures": [
+    {
+      "signerAgentId": "did:kite:acme:buyer-17",
+      "profile": "secp256k1-keccak-v1",
+      "keyId": "did:kite:acme:buyer-17#jkt:6a5da2aa30d9780a",
+      "sig": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+    }
+  ],
+  "termsHash": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+  "runtimeBinding": {
+    "runtimeAgentId": "did:kite:kite:coordination-engine",
+    "agentCardHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "extensionUri": "https://a2a.gokite.ai/extensions/coordination-workflow/v1",
+    "endpoint": "https://passport.dev.gokite.ai/a2a/v1"
+  },
+  "disputePolicy": {
+    "arbiterAgentId": "did:kite:arbiterco:arbiter-01"
+  },
+  "escrow": {
+    "payoutAddress": "0x3333333333333333333333333333333333333333"
+  },
+  "price": {
+    "amount": "25.00",
+    "asset": "USDC"
+  },
+  "acceptanceCriteria": "it is a haiku",
+  "deliverable": "one haiku about escrow",
+  "sellerAgentId": "did:kite:haiku:seller-3",
+  "buyerAgentId": "did:kite:acme:buyer-17",
+  "template": "fixed_outcome/v1",
+  "schema": "https://a2a.gokite.ai/schemas/deal-contract/v1"
+}

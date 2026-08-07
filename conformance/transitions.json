@@ -1,0 +1,124 @@
+{
+  "$comment": "Every edge in spec §3's fixed_outcome/v1 table, and the illegal ones. Data, not code, so any language can replay it.",
+  "template": "fixed_outcome/v1",
+  "states": [
+    "PROPOSED", "COMMITTED", "FULFILLING", "DELIVERED", "REJECTED",
+    "DISPUTED", "ACCEPTED", "RESOLVED", "CANCELLED", "DEFAULTED", "EXPIRED"
+  ],
+  "terminalStates": ["ACCEPTED", "RESOLVED", "CANCELLED", "DEFAULTED", "EXPIRED"],
+  "partyCommands": [
+    "kite.contract.delivered",
+    "kite.contract.accepted",
+    "kite.contract.rejected",
+    "kite.contract.appealed",
+    "kite.contract.refund_consented",
+    "kite.contract.arbiter_decided"
+  ],
+
+  "legal": [
+    {
+      "from": "COMMITTED", "to": "FULFILLING", "driver": "runtime", "event": "FUND_CONFIRMED",
+      "note": "a chain observation. No party can command it — a Runtime that accepts a party-supplied 'funded' has removed the only thing tying state to money."
+    },
+    { "from": "COMMITTED", "to": "EXPIRED", "driver": "deadline", "event": "FUNDING_EXPIRED" },
+
+    { "from": "FULFILLING", "to": "DELIVERED", "driver": "command", "commandType": "kite.contract.delivered", "actor": "seller" },
+    { "from": "FULFILLING", "to": "DEFAULTED", "driver": "deadline", "event": "DELIVERY_MISSED" },
+    { "from": "FULFILLING", "to": "CANCELLED", "driver": "command", "commandType": "kite.contract.refund_consented", "actor": "seller" },
+
+    {
+      "from": "DELIVERED", "to": "ACCEPTED", "driver": "command", "commandType": "kite.contract.accepted", "actor": "buyer",
+      "note": "also reachable by auto-confirm at window expiry — the deadline path and the command path land on the same state."
+    },
+    { "from": "DELIVERED", "to": "REJECTED", "driver": "command", "commandType": "kite.contract.rejected", "actor": "buyer" },
+    { "from": "DELIVERED", "to": "CANCELLED", "driver": "command", "commandType": "kite.contract.refund_consented", "actor": "seller" },
+
+    { "from": "REJECTED", "to": "DISPUTED", "driver": "command", "commandType": "kite.contract.appealed", "actor": "seller" },
+    { "from": "REJECTED", "to": "CANCELLED", "driver": "deadline", "event": "APPEAL_RESPONSE_EXPIRED" },
+    { "from": "REJECTED", "to": "CANCELLED", "driver": "command", "commandType": "kite.contract.refund_consented", "actor": "seller" },
+
+    { "from": "DISPUTED", "to": "RESOLVED", "driver": "command", "commandType": "kite.contract.arbiter_decided", "actor": "arbiter" },
+    { "from": "DISPUTED", "to": "CANCELLED", "driver": "deadline", "event": "ARBITRATION_EXPIRED" }
+  ],
+
+  "selfLoops": [
+    {
+      "states": ["ACCEPTED", "RESOLVED", "CANCELLED", "DEFAULTED", "EXPIRED"],
+      "driver": "runtime", "event": "SETTLEMENT_OBSERVED",
+      "note": "money settles on chain AFTER the agreement state is final. The observation changes no state and is recorded like any other transition."
+    }
+  ],
+
+  "illegal": [
+    {
+      "from": "REJECTED", "commandType": "kite.contract.delivered", "actor": "seller",
+      "errorCode": "illegal_transition",
+      "note": "THERE IS NO RESUBMISSION EDGE. Earlier drafts had a policy-bounded rejected → submitted loop; it was dropped. A seller who wants another attempt appeals, or the parties settle."
+    },
+    {
+      "from": "COMMITTED", "commandType": "kite.contract.delivered", "actor": "seller",
+      "errorCode": "illegal_transition",
+      "note": "delivery before funding is confirmed — the seller would be working against an unfunded escrow."
+    },
+    {
+      "from": "FULFILLING", "commandType": "kite.contract.accepted", "actor": "buyer",
+      "errorCode": "illegal_transition",
+      "note": "accepting before anything was delivered would release escrow for nothing."
+    },
+    {
+      "from": "DELIVERED", "commandType": "kite.contract.appealed", "actor": "seller",
+      "errorCode": "illegal_transition",
+      "note": "an appeal answers a rejection; there is nothing yet to appeal."
+    },
+    {
+      "from": "ACCEPTED", "commandType": "kite.contract.rejected", "actor": "buyer",
+      "errorCode": "illegal_transition",
+      "note": "terminal states take no party command. Only SETTLEMENT_OBSERVED, as a self-loop."
+    },
+    {
+      "from": "CANCELLED", "commandType": "kite.contract.accepted", "actor": "buyer",
+      "errorCode": "illegal_transition"
+    },
+    {
+      "from": "DISPUTED", "commandType": "kite.contract.accepted", "actor": "buyer",
+      "errorCode": "illegal_transition",
+      "note": "once disputed, only the arbiter or a deadline resolves it — the buyer cannot take the decision back."
+    }
+  ],
+
+  "actorBinding": [
+    {
+      "commandType": "kite.contract.delivered", "mustBe": "seller",
+      "note": "the vault enforces the same split on chain, but by then the engine has already committed the transition — so an unauthorized command that the vault will later refuse still leaves a false state change and a false actor in the audit trail."
+    },
+    { "commandType": "kite.contract.accepted", "mustBe": "buyer" },
+    { "commandType": "kite.contract.rejected", "mustBe": "buyer" },
+    { "commandType": "kite.contract.appealed", "mustBe": "seller" },
+    { "commandType": "kite.contract.refund_consented", "mustBe": "seller" },
+    { "commandType": "kite.contract.arbiter_decided", "mustBe": "arbiter" }
+  ],
+
+  "concurrency": [
+    {
+      "case": "stale-revision",
+      "given": { "currentRevision": 5 },
+      "command": { "expectedRevision": 2 },
+      "expect": { "accepted": false, "errorCode": "revision_conflict" },
+      "note": "the actor signed against a state that has since moved."
+    },
+    {
+      "case": "identical-replay",
+      "given": { "alreadyApplied": "cmd_x" },
+      "command": { "commandId": "cmd_x", "bytes": "identical" },
+      "expect": { "accepted": true, "appliedTwice": false, "returns": "the original result" },
+      "note": "a retry is not a second transition."
+    },
+    {
+      "case": "divergent-replay",
+      "given": { "alreadyApplied": "cmd_x" },
+      "command": { "commandId": "cmd_x", "bytes": "different" },
+      "expect": { "accepted": false, "errorCode": "idempotency_conflict" },
+      "note": "reusing an idempotency key for different content is a conflict, not a retry. Both bodies are schema-valid, which is why a schema-only implementation gets this wrong — see vectors/v1/commands/conflict-idempotency-divergent-replay."
+    }
+  ]
+}

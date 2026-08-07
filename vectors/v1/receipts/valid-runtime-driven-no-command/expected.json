@@ -1,0 +1,5 @@
+{
+  "signatureValid": true,
+  "recoveredAddress": "0x5cbdd86a2fa8dc4bddd8a8f69dba48572eec07fb",
+  "signedPreimage": "{\"dealId\":\"deal_0123456789ab\",\"fromState\":\"COMMITTED\",\"receiptId\":\"atr_02\",\"recordedAt\":\"2026-08-07T09:00:00Z\",\"revision\":3,\"schema\":\"https://a2a.gokite.ai/schemas/agreement-transition-receipt/v1\",\"toState\":\"FULFILLING\"}"
+}

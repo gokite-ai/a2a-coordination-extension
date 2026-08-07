@@ -1,0 +1,7 @@
+{
+  "schemaValid": true,
+  "payloadHash": "sha256:b990300402c213219f7510c3585f0dc4ff1c345a573d463999e74e959ea7bad5",
+  "signatureValid": true,
+  "recoveredAddress": "0x1563915e194d8cfba1943570603f7606a3115508",
+  "actorRole": "seller"
+}

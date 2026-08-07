@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "currentRevision": 5,
+  "outcome": "rejected",
+  "errorCode": "revision_conflict"
+}

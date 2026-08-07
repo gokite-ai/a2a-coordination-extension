@@ -1,0 +1,42 @@
+{
+  "first": {
+    "schema": "https://a2a.gokite.ai/schemas/agreement-command/v1",
+    "commandId": "cmd_conflict",
+    "commandType": "kite.contract.accepted",
+    "dealId": "deal_0123456789ab",
+    "expectedRevision": 5,
+    "actorAgentId": "did:kite:acme:buyer-17",
+    "termsHash": "sha256:feba188b56c1e0deba060f0284f9e26772f20802a8e95578a3a52d028e6308d4",
+    "payload": {
+      "buyerAcceptanceSig": "0xababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab",
+      "expiry": 1800000000
+    },
+    "payloadHash": "sha256:6936f088750a1de73b45a4268a78eae2ecb862bdd0c4ac837df6d22dd084b1f4",
+    "occurredAt": "2026-08-07T09:30:00Z",
+    "signature": {
+      "profile": "secp256k1-keccak-v1",
+      "keyId": "did:kite:acme:buyer-17#jkt:6a5da2aa30d9780a",
+      "sig": "0x9865698ca8c7109339835c41aefaab8c3fadd28c06b22db7cc23bb8d6069087b1d154f7d56cda95a945caa31703296e6b29814689eac0161281f7013cfd870591c"
+    }
+  },
+  "second": {
+    "schema": "https://a2a.gokite.ai/schemas/agreement-command/v1",
+    "commandId": "cmd_conflict",
+    "commandType": "kite.contract.accepted",
+    "dealId": "deal_0123456789ab",
+    "expectedRevision": 5,
+    "actorAgentId": "did:kite:acme:buyer-17",
+    "termsHash": "sha256:feba188b56c1e0deba060f0284f9e26772f20802a8e95578a3a52d028e6308d4",
+    "payload": {
+      "buyerAcceptanceSig": "0xababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababababab",
+      "expiry": 1900000000
+    },
+    "payloadHash": "sha256:3bbaa9f8488bc77626fba21a96f14dc62352728d89c4d53ad46f4328848e66d0",
+    "occurredAt": "2026-08-07T09:30:00Z",
+    "signature": {
+      "profile": "secp256k1-keccak-v1",
+      "keyId": "did:kite:acme:buyer-17#jkt:6a5da2aa30d9780a",
+      "sig": "0xc4393248271e054e76f29a920afbfdb9beaff6eaf40950535f917c60c05369da542bf12e666904379773e2125f3fe894708382f2f0be3426288bf0b5dd5a55511b"
+    }
+  }
+}

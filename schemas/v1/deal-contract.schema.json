@@ -1,0 +1,152 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2a.gokite.ai/schemas/deal-contract/v1",
+  "title": "DealContract",
+  "description": "DRAFT — the canonical agreement object. termsHash is the sha256 of the RFC 8785 canonicalization of this object with `signatures` omitted; the first signature over it is a proposal, the second signature over the identical hash is acceptance. Any changed field produces a new termsHash and therefore a new proposal.",
+  "type": "object",
+  "required": [
+    "schema",
+    "template",
+    "buyerAgentId",
+    "sellerAgentId",
+    "deliverable",
+    "acceptanceCriteria",
+    "price",
+    "disputePolicy",
+    "runtimeBinding",
+    "escrow",
+    "signatures"
+  ],
+  "properties": {
+    "schema": {
+      "const": "https://a2a.gokite.ai/schemas/deal-contract/v1"
+    },
+    "template": {
+      "type": "string",
+      "description": "Pinned workflow template + version.",
+      "enum": ["fixed_outcome/v1"]
+    },
+    "buyerAgentId": {
+      "$ref": "#/$defs/kiteDid"
+    },
+    "sellerAgentId": {
+      "$ref": "#/$defs/kiteDid"
+    },
+    "buyerAuthorityRef": {
+      "type": "string",
+      "description": "Delegated-authority reference required for buyer spend (task/delegation binding)."
+    },
+    "deliverable": {
+      "type": "string",
+      "description": "What the seller delivers."
+    },
+    "acceptanceCriteria": {
+      "type": "string",
+      "description": "How acceptance is judged. Business verification is the buyer's (pre-acceptance) and the arbiter's (on dispute) concern — see disputePolicy."
+    },
+    "price": {
+      "type": "object",
+      "required": ["amount", "asset"],
+      "properties": {
+        "amount": { "type": "string", "pattern": "^[0-9]+(\\.[0-9]+)?$" },
+        "asset": { "type": "string", "examples": ["USDC"] }
+      },
+      "additionalProperties": false
+    },
+    "escrow": {
+      "type": "object",
+      "description": "Escrow venue, payout and refund addresses, fixed at signing. REQUIRED: fixed_outcome/v1 cannot settle without a payout destination, and the Runtime refuses a proposal that omits one — a schema that admitted such a contract would validate something the system always rejects.",
+      "required": ["payoutAddress"],
+      "properties": {
+        "payoutAddress": { "type": "string" },
+        "refundAddress": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "evidenceSchema": {
+      "type": "string",
+      "description": "Schema URI the delivery evidence must validate against at intake."
+    },
+    "disclosurePolicy": {
+      "type": "string"
+    },
+    "verifier": {
+      "type": "object",
+      "description": "Optional contract-named external business verifier or oracle (own agent ID + key + pinned rule/version).",
+      "properties": {
+        "agentId": { "$ref": "#/$defs/kiteDid" },
+        "rule": { "type": "string" },
+        "ruleVersion": { "type": "string" }
+      }
+    },
+    "disputePolicy": {
+      "type": "object",
+      "required": ["arbiterAgentId"],
+      "properties": {
+        "arbiterAgentId": {
+          "$ref": "#/$defs/kiteDid",
+          "description": "Third-party arbiter: DisputeCase in, signed ArbitrationDecision out. The Runtime verifies and executes, never judges."
+        }
+      },
+      "additionalProperties": false
+    },
+    "runtimeBinding": {
+      "type": "object",
+      "description": "Pins the Runtime persona, Extension, template, endpoint, keys, and Audit policy. Changing any of these requires a new proposal.",
+      "required": ["runtimeAgentId", "agentCardHash", "extensionUri", "endpoint"],
+      "properties": {
+        "runtimeAgentId": { "type": "string" },
+        "agentCardHash": { "$ref": "#/$defs/sha256Ref" },
+        "extensionUri": {
+          "const": "https://a2a.gokite.ai/extensions/coordination-workflow/v1"
+        },
+        "endpoint": {
+          "type": "string",
+          "format": "uri",
+          "description": "The Runtime's published A2A service endpoint from its Agent Card."
+        },
+        "runtimeKeyRef": { "type": "string" },
+        "auditIdentity": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "signatures": {
+      "type": "array",
+      "description": "Both parties' signatures over the same termsHash. Exactly one entry while proposed; exactly two once accepted.",
+      "minItems": 1,
+      "maxItems": 2,
+      "items": {
+        "type": "object",
+        "required": ["signerAgentId", "profile", "keyId", "sig"],
+        "properties": {
+          "signerAgentId": { "$ref": "#/$defs/kiteDid" },
+          "profile": { "const": "secp256k1-keccak-v1" },
+          "keyId": { "type": "string" },
+          "sig": { "$ref": "#/$defs/secp256k1Sig" },
+          "agreementSig": {
+            "$ref": "#/$defs/secp256k1Sig",
+            "description": "The party's EIP-712 Agreement co-signature (settlement layer) — a DIFFERENT object and digest from the formation `sig` above. The Coordination Engine verifies it at the accept gate before starting the workflow; the platform never produces it. Optional until the on-chain settlement path is enabled."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "kiteDid": {
+      "type": "string",
+      "description": "Kite Identity DID: did:kite:<identifier>:<agent_id>",
+      "pattern": "^did:kite:[a-z0-9]([a-z0-9_-]*[a-z0-9])?:[a-z0-9]([a-z0-9_-]*[a-z0-9])?$"
+    },
+    "sha256Ref": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "secp256k1Sig": {
+      "type": "string",
+      "description": "Recoverable secp256k1 ECDSA signature over keccak256(domain-tag ‖ signed bytes), 0x-prefixed 65-byte r‖s‖v hex (profile secp256k1-keccak-v1). Same primitive and key as the EscrowVault settlement layer.",
+      "pattern": "^0x[0-9a-fA-F]{130}$"
+    }
+  }
+}

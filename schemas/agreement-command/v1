@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2a.gokite.ai/schemas/agreement-command/v1",
+  "title": "AgreementCommand",
+  "description": "DRAFT — one immutable, signed, state-changing action against an agreement. The signed body is the RFC 8785 canonicalization of this object with `signature` omitted, prefixed by the domain-separation tag kite:a2a-agreement:command:v1.",
+  "type": "object",
+  "required": [
+    "schema",
+    "commandId",
+    "commandType",
+    "dealId",
+    "expectedRevision",
+    "actorAgentId",
+    "termsHash",
+    "payload",
+    "payloadHash",
+    "occurredAt",
+    "signature"
+  ],
+  "properties": {
+    "schema": {
+      "const": "https://a2a.gokite.ai/schemas/agreement-command/v1"
+    },
+    "commandId": {
+      "type": "string",
+      "description": "Idempotency key. Reusing it with different immutable bytes is rejected and audited.",
+      "pattern": "^cmd_[A-Za-z0-9]+$"
+    },
+    "commandType": {
+      "type": "string",
+      "description": "Party command vocabulary for fixed_outcome/v1: the engine's kite.contract.* message types. Each value names exactly one recorded event (a transition kind); which edge it takes is resolved against the deal's current state, and a command not legal from that state is rejected as illegal_transition. Source of truth is the Coordination Engine's code (fulfill-engine pkg/model/model.go); this enum documents it. Proposal and acceptance are interaction kinds, not command types; funding is a Runtime chain observation; kite.contract.fulfill_started is a Runtime-to-seller notification, never a command.",
+      "enum": [
+        "kite.contract.delivered",
+        "kite.contract.accepted",
+        "kite.contract.rejected",
+        "kite.contract.appealed",
+        "kite.contract.refund_consented",
+        "kite.contract.arbiter_decided"
+      ]
+    },
+    "dealId": {
+      "type": "string"
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Optimistic-concurrency check against the agreement's current revision."
+    },
+    "actorAgentId": {
+      "type": "string",
+      "description": "Kite Identity DID: did:kite:<identifier>:<agent_id>",
+      "pattern": "^did:kite:[a-z0-9]([a-z0-9_-]*[a-z0-9])?:[a-z0-9]([a-z0-9_-]*[a-z0-9])?$"
+    },
+    "termsHash": {
+      "$ref": "#/$defs/sha256Ref"
+    },
+    "payload": {
+      "type": "object",
+      "description": "The command-type-specific payload object (spec §4.2 defines each type's members, e.g. reasonCode for kite.contract.rejected, evidenceRef/sellerDeliverySig/expiry for kite.contract.delivered). May be empty ({}) for command types that carry no data. Embedded *Sig members are settlement-layer signatures (EIP-712), opaque strings to this extension."
+    },
+    "payloadHash": {
+      "$ref": "#/$defs/sha256Ref",
+      "description": "sha256 over the RFC 8785 canonicalization of the payload member; the Runtime independently recomputes it and rejects a mismatch as payload_hash_mismatch."
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/sha256Ref"
+      },
+      "description": "Validated evidence-manifest hashes; evidence bytes never travel in the command."
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "signature": {
+      "$ref": "#/$defs/signature"
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "sha256Ref": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "signature": {
+      "type": "object",
+      "required": ["profile", "keyId", "sig"],
+      "properties": {
+        "profile": {
+          "const": "secp256k1-keccak-v1"
+        },
+        "keyId": {
+          "type": "string",
+          "description": "Actor DID plus key fragment, e.g. did:kite:pubco:seller-42#key-3; resolves to the actor's secp256k1 key (its on-chain EVM address). The signer recovered from sig MUST equal it."
+        },
+        "sig": {
+          "type": "string",
+          "description": "Recoverable secp256k1 ECDSA signature over keccak256(kite:a2a-agreement:command:v1 ‖ rfc8785(command without signature)), 0x-prefixed 65-byte r‖s‖v hex. Same primitive and key as the EscrowVault settlement layer.",
+          "pattern": "^0x[0-9a-fA-F]{130}$"
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

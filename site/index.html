@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A2A Kite Coordination Extension — v1</title>
+  <style>
+    body { font: 16px/1.6 system-ui, sans-serif; max-width: 46rem; margin: 3rem auto; padding: 0 1rem; color: #1a1a1a; }
+    code, pre { font-family: ui-monospace, monospace; background: #f4f4f4; border-radius: 4px; }
+    code { padding: 0.1em 0.35em; }
+    pre { padding: 0.75rem 1rem; overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; }
+    td, th { border: 1px solid #ddd; padding: 0.4rem 0.6rem; text-align: left; }
+    .draft { background: #fff3cd; border: 1px solid #ffe08a; border-radius: 6px; padding: 0.6rem 1rem; }
+    @media (prefers-color-scheme: dark) {
+      body { background: #111; color: #ddd; }
+      code, pre { background: #1e1e1e; }
+      td, th { border-color: #333; }
+      .draft { background: #3a3000; border-color: #6b5900; }
+    }
+  </style>
+</head>
+<body>
+  <h1>A2A Kite Coordination Extension</h1>
+  <p class="draft"><strong>Release candidate — not yet v1.0.0.</strong> The wire contract, the identifiers on this page and every signed preimage are fixed; the schemas, vectors and example agents are aligned to them. One release criterion is still open — the conformance suite's state-machine cases have no live driver yet (spec §9.1) — so the bundle is implementable but not frozen.</p>
+
+  <p>A versioned extension to the <a href="https://github.com/a2aproject/A2A">A2A protocol</a> that lets buyer and seller agents form and execute agreements through the Kite Coordination Engine: typed, signed workflow commands; two-signature agreement over one <code>termsHash</code>; runtime-signed transition receipts; verifiable audit proof packages. No A2A fork, no Kite SDK required.</p>
+
+  <pre>https://a2a.gokite.ai/extensions/coordination-workflow/v1</pre>
+
+  <h2>Normative bundle</h2>
+  <table>
+    <tr><th>Artifact</th><th>Location</th></tr>
+    <tr><td>Specification</td><td><a href="../spec/v1/coordination-workflow.md">spec/v1/coordination-workflow.md</a></td></tr>
+    <tr><td>JSON Schemas</td><td><a href="../schemas/v1/">schemas/v1/</a> — DealContract · AgreementCommand · AgreementTransitionReceipt · error catalog</td></tr>
+    <tr><td>Test vectors</td><td><a href="../vectors/v1/">vectors/v1/</a></td></tr>
+    <tr><td>Conformance suite</td><td><a href="../conformance/">conformance/</a></td></tr>
+    <tr><td>Example agents (non-normative)</td><td><a href="../examples/">examples/</a></td></tr>
+  </table>
+
+  <h2>Key identifiers</h2>
+  <table>
+    <tr><td>Command media type</td><td><code>application/vnd.gokite.agreement-command+json;version=1</code></td></tr>
+    <tr><td>Signature profile</td><td><code>secp256k1-keccak-v1</code> (recoverable secp256k1 ECDSA over <code>keccak256(tag ‖ RFC 8785 bytes)</code>, 65-byte r‖s‖v — same primitive/key as EscrowVault settlement)</td></tr>
+    <tr><td>Command domain tag</td><td><code>kite:a2a-agreement:command:v1</code></td></tr>
+    <tr><td>First template</td><td><code>fixed_outcome/v1</code></td></tr>
+  </table>
+
+  <h2>Versioning &amp; feedback</h2>
+  <p>Backward-compatible additions may land within v1; published v1 files are append-only; breaking changes get a new URI. Implementer feedback: issues on the <code>gokite-ai/a2a-coordination-extension</code> repository.</p>
+</body>
+</html>

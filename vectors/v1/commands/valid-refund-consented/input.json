@@ -1,0 +1,20 @@
+{
+  "schema": "https://a2a.gokite.ai/schemas/agreement-command/v1",
+  "commandId": "cmd_refundconsented",
+  "commandType": "kite.contract.refund_consented",
+  "dealId": "deal_0123456789ab",
+  "expectedRevision": 7,
+  "actorAgentId": "did:kite:haiku:seller-3",
+  "termsHash": "sha256:feba188b56c1e0deba060f0284f9e26772f20802a8e95578a3a52d028e6308d4",
+  "payload": {
+    "sellerConsentSig": "0x3434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434343434",
+    "expiry": 1800000000
+  },
+  "payloadHash": "sha256:b990300402c213219f7510c3585f0dc4ff1c345a573d463999e74e959ea7bad5",
+  "occurredAt": "2026-08-07T09:30:00Z",
+  "signature": {
+    "profile": "secp256k1-keccak-v1",
+    "keyId": "did:kite:haiku:seller-3#jkt:2cae26c62970654c",
+    "sig": "0xaff83f11d20fe99c9c1f1008b11ea47e35e833a86f9c084833ca29906acc88b22728dab4ee597beb7a875e611cae4554892878a7746e3f8d22794c1f136e7b711b"
+  }
+}

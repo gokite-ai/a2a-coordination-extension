@@ -1,0 +1,4 @@
+{
+  "schemaValid": false,
+  "schemaErrors": "data/commandType must be equal to one of the allowed values"
+}
