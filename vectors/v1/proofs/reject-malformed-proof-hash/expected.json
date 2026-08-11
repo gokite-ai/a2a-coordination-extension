@@ -1,0 +1,4 @@
+{
+  "schemaValid": false,
+  "schemaErrors": "data/proofHash must match pattern \"^(sha256:[0-9a-f]{64}|0x[0-9a-f]{64})$\""
+}

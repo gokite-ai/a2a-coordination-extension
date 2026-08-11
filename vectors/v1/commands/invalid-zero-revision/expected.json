@@ -1,0 +1,5 @@
+{
+  "schemaValid": false,
+  "schemaErrors": "data/expectedRevision must be >= 1",
+  "note": "expectedRevision 0 is not an opt-out from the concurrency check — it is rejected like any other out-of-range value (spec §4.2)."
+}

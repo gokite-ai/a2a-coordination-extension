@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": true,
+  "wireMatchesCatalog": true,
+  "note": "Safe to retry idempotently with the SAME commandId — a new id would turn a transient failure into a second command."
+}

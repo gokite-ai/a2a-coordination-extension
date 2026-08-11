@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": true,
+  "wireMatchesCatalog": true,
+  "note": "No deal context on purpose: rate limiting is a property of the caller, not of any one agreement."
+}

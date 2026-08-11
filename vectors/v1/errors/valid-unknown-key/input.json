@@ -1,0 +1,7 @@
+{
+  "code": "unknown_key",
+  "retriable": false,
+  "dealId": "deal_0123456789ab",
+  "commandId": "cmd_01",
+  "actorAgentId": "did:kite:haiku:seller-3"
+}

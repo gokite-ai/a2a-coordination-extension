@@ -1,6 +1,6 @@
 {
   "signatureValid": true,
   "recoveredAddress": "0x5cbdd86a2fa8dc4bddd8a8f69dba48572eec07fb",
-  "signedPreimage": "{\"commandHash\":\"sha256:54275c2a6106c5bfc3a4c2590ab29032fe753ebbfa9729b8a25eb42c2016c646\",\"commandId\":\"cmd_01\",\"dealId\":\"deal_0123456789ab\",\"fromState\":\"FULFILLING\",\"receiptId\":\"atr_01\",\"recordedAt\":\"2026-08-07T09:30:01Z\",\"revision\":4,\"schema\":\"https://a2a.gokite.ai/schemas/agreement-transition-receipt/v1\",\"toState\":\"DELIVERED\"}",
+  "signedPreimage": "{\"commandHash\":\"sha256:3537dcd132359bfeadf2b1ea87c5e4e426f30c60c3d35ab941ca1bd4f6f1ee90\",\"commandId\":\"cmd_01\",\"dealId\":\"deal_0123456789ab\",\"fromState\":\"FULFILLING\",\"receiptId\":\"atr_01\",\"recordedAt\":\"2026-08-07T09:30:01Z\",\"revision\":4,\"schema\":\"https://a2a.gokite.ai/schemas/agreement-transition-receipt/v1\",\"toState\":\"DELIVERED\"}",
   "auditStatusSigned": false
 }

@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": false,
+  "wireMatchesCatalog": false,
+  "note": "Schema-valid but WRONG: retriable MUST match the catalog, and idempotency_conflict is not retriable. A client trusting the wire value would retry a request that can never succeed. Caught by the catalog cross-check, not by the schema."
+}

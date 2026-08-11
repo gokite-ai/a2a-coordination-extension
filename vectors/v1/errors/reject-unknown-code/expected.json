@@ -1,0 +1,5 @@
+{
+  "schemaValid": false,
+  "schemaErrors": "data/code must be equal to one of the allowed values",
+  "note": "An unhandled branch must fail as a schema error rather than reach a client as an unknown code."
+}

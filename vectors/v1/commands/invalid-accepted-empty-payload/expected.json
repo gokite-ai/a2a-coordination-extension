@@ -1,0 +1,4 @@
+{
+  "schemaValid": false,
+  "schemaErrors": "data/payload must have required property 'buyerAcceptanceSig'; data/payload must have required property 'expiry'; data must match \"then\" schema"
+}

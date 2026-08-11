@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2a.gokite.ai/schemas/agreement-transition-proof/v1",
+  "title": "AgreementTransitionProof",
+  "description": "One element of the `proofs` array the party-scoped `proofs` interaction returns (§6.2.1, §6.3): a link in the Runtime's hash-chained, signed transition-proof record, committed atomically with each accepted transition. This is the Runtime's own artifact, distinct from the Audit-owned transition receipt (agreement-transition-receipt/v1) built FROM it — they MUST NOT be presented as the same guarantee. The chain is load-bearing rather than informational: `proofHash` of the prior transition is exactly the `receiptHash` every settlement signature quotes (§4.4), so a party that cannot read this payload cannot sign settlement at all. Members are camelCase like every other object in this contract; a Runtime whose internal store uses other spellings MUST map them at the edge rather than leaking them onto the wire.",
+  "type": "object",
+  "required": [
+    "agreementId",
+    "sequence",
+    "event",
+    "toState",
+    "proofHash",
+    "createdAt"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "proofId": {
+      "type": "string",
+      "description": "The Runtime's identifier for this proof."
+    },
+    "agreementId": {
+      "type": "string",
+      "description": "The deal this proof belongs to — the same id the interactions carry as dealId. REQUIRED: it is the first field of the proofHash preimage (§6.3.1), so a proof without it cannot be recomputed and is unverifiable by construction."
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Position in the chain, starting at 1. Consumers MUST order by this rather than by array position or timestamp: `receiptHash` is the hash of the PRIOR proof, so a mis-ordered read signs the wrong anchor."
+    },
+    "event": {
+      "type": "string",
+      "description": "The transition event, in the §5 vocabulary (CONTRACT_SIGNED, FUND_CONFIRMED, DELIVERED, ACCEPTED, SETTLEMENT_OBSERVED, …). UPPERCASE, untranslated."
+    },
+    "fromState": {
+      "type": "string",
+      "description": "The state left. Present on every link the Kite Runtime emits, INCLUDING the first: its first transition is PROPOSED -> COMMITTED (§3), so the first link carries fromState PROPOSED. Only `previousProofHash` is absent on the first link, because no earlier proof exists. Omitted only by a Runtime whose chain genuinely starts from no prior state."
+    },
+    "toState": {
+      "type": "string",
+      "description": "The state entered, UPPERCASE as on the wire (§3)."
+    },
+    "previousProofHash": {
+      "type": "string",
+      "description": "`proofHash` of the proof at `sequence - 1`. Absent exactly on the first link; present and matching thereafter — that equality IS the chain, and a consumer verifying the trail MUST check it rather than trusting the order it was served in.",
+      "pattern": "^(sha256:[0-9a-f]{64}|0x[0-9a-f]{64})$"
+    },
+    "proofHash": {
+      "type": "string",
+      "description": "This proof's own hash. The prior transition's value is what a party quotes as `receiptHash` when signing a vault call (§4.4).",
+      "pattern": "^(sha256:[0-9a-f]{64}|0x[0-9a-f]{64})$"
+    },
+    "previousStateHash": {
+      "type": "string",
+      "description": "sha256 over the length-prefixed (agreementId, fromState, sequence-1) triple (§6.3.1). Present on the first link too — it hashes the PROPOSED state at sequence 0, which exists before the chain does. It is inside the proofHash preimage, so a verifier must read it from the proof rather than assume it absent."
+    },
+    "nextStateHash": {
+      "type": "string",
+      "description": "State digest after this transition, when the Runtime keeps one."
+    },
+    "actorId": {
+      "type": "string",
+      "description": "Who caused the transition: an agent DID for a party command, or the Runtime itself for an observation or a deadline expiry. This is what lets a party check that a transition it is asked to trust was driven by the actor entitled to drive it."
+    },
+    "authorityRef": {
+      "type": "string",
+      "description": "The authority the actor acted under, when the Runtime records one."
+    },
+    "commandId": {
+      "type": "string",
+      "description": "Present exactly when an AgreementCommand drove the transition. The split is by COMMAND, not by actor: absent on Runtime-driven links (chain observations, deadline expiries, auto-confirm — §5) AND on CONTRACT_SIGNED, which is party-driven but arrives through the `acceptance` interaction rather than as a command, so there are no command bytes to name (§4.3, §6.3). A consumer MUST NOT read the absence as evidence that the Runtime drove the link; `actorId` is what says who did."
+    },
+    "commandHash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "Content hash of the command that drove this transition: sha256 over its canonical form with `signature` omitted (§4.2) — the preimage the actor signed. Present exactly when `commandId` is.\n\nThis is what binds the transition to the command's CONTENT rather than to the id a caller chose. With only the id, the chain attests that SOME command bearing that id drove the transition, not which bytes — so a committed command and a different one replayed under the same id are indistinguishable in the record. It is inside the proofHash preimage (§6.3.1), so it is attested rather than annotation, and it is what lets the Audit plane build the `commandHash` its receipt carries (§4.3) from the chain."
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Evidence identifiers this transition cited, when any."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Runtime-recorded context for this link (for example the funding transaction behind a FUND_CONFIRMED). Free-form: a consumer MUST NOT require any particular key."
+    },
+    "signedBy": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{40}$",
+      "description": "The Runtime signing key's EVM ADDRESS — not a DID and not a keyId. This is the one place the Runtime attestation profile differs from the party signatures in §4/§8, and it is deliberate: a verifier recovers the signer from `signature` and compares it here directly, with no identity resolution in the path. Present once the Runtime attests its chain; a consumer that verifies attestation MUST treat an unsigned link as unattested rather than as valid, and MUST NOT infer attestation from a signed neighbour."
+    },
+    "signature": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{130}$",
+      "description": "The Runtime's recoverable secp256k1 signature over keccak256(\"kite:fulfill:transition-proof:v1\" ‖ proofHash), where proofHash is the RENDERED string including its `sha256:` prefix, not the raw digest bytes. 0x-prefixed 65-byte r‖s‖v with v ∈ {27,28}. The full preimage is §6.3.1."
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the Runtime committed this proof (RFC 3339)."
+    }
+  },
+  "dependentRequired": {
+    "signedBy": [
+      "signature"
+    ],
+    "signature": [
+      "signedBy"
+    ],
+    "commandId": [
+      "commandHash"
+    ],
+    "commandHash": [
+      "commandId"
+    ]
+  }
+}

@@ -5,9 +5,12 @@ Each function cites the spec section it implements, and `tests/test_vectors.py`
 replays `vectors/v1` against the signing primitives so this file is checkably
 the same protocol the Kite runtime speaks.
 
-Demo scope: signed objects are built and verified for real. Delivering them to
-a Coordination Engine is the caller's job — point KITE_COORDINATION_ENDPOINT at
-a live Runtime and send them as Extension-typed Parts (§6).
+Demo scope: signed objects are built and verified for real, then verified
+locally. Delivering them to a Coordination Engine is the caller's job — point
+KITE_COORDINATION_ENDPOINT at a live Runtime and send them as Extension-typed
+Parts (§6). The traffic the two example agents exchange with each other is a
+demo-private negotiation on its own media type, never the Extension's; see
+NEGOTIATION_MEDIA_TYPE below.
 """
 
 from __future__ import annotations
@@ -19,12 +22,27 @@ from typing import Any
 
 from coincurve import PrivateKey
 
-from . import signing
+from . import settlement, signing
 
 EXTENSION_URI = "https://a2a.gokite.ai/extensions/coordination-workflow/v1"
-COMMAND_MEDIA_TYPE = "application/vnd.gokite.agreement-command+json;version=1"
 COMMAND_SCHEMA = "https://a2a.gokite.ai/schemas/agreement-command/v1"
 CONTRACT_SCHEMA = "https://a2a.gokite.ai/schemas/deal-contract/v1"
+
+# The Extension's own media type (§6.1). It belongs on Parts carrying the
+# interactions §6.2 defines, addressed to a Coordination Runtime — which is
+# exactly what this demo does NOT do. It is named here because a reader wiring
+# these objects to a live Runtime needs it; nothing below puts it on the wire.
+COMMAND_MEDIA_TYPE = "application/vnd.gokite.agreement-command+json;version=1"
+
+# DEMO-PRIVATE, and not part of the Extension contract. The two example agents
+# negotiate with EACH OTHER, and none of what they exchange to do it —
+# request-terms, submit-proposal, acceptance-request, request-delivery and the
+# seller's replies — is an interaction §6.2 defines. Stamping those with
+# COMMAND_MEDIA_TYPE would advertise a private peer protocol as Extension
+# traffic, so they get their own carrier. Anyone copying this demo should
+# expect to replace the negotiation entirely; the signed objects it produces
+# are the part that is normative.
+NEGOTIATION_MEDIA_TYPE = "application/vnd.gokite.example-negotiation+json;version=1"
 
 # The one deployment-specific value. Every identifier above is
 # environment-neutral on purpose: they are pinned inside signed contracts (the
@@ -35,6 +53,7 @@ COORDINATION_ENDPOINT = os.environ.get(
 )
 
 BUYER_AGENT_ID = os.environ.get("BUYER_AGENT_ID", "did:kite:acme:buyer-17")
+
 
 
 def now_iso() -> str:
@@ -55,6 +74,7 @@ def draft_contract(
     payout_address: str,
     runtime_agent_id: str = "did:kite:kite:coordination-engine",
     runtime_card_hash: str = "sha256:" + "0" * 64,
+    runtime_endpoint: str | None = None,
 ) -> dict[str, Any]:
     """Assemble final terms as a DealContract (§4.1, schemas/v1).
 
@@ -84,7 +104,7 @@ def draft_contract(
             "runtimeAgentId": runtime_agent_id,
             "agentCardHash": runtime_card_hash,
             "extensionUri": EXTENSION_URI,
-            "endpoint": COORDINATION_ENDPOINT,
+            "endpoint": runtime_endpoint or COORDINATION_ENDPOINT,
         },
         "signatures": [],
     }
@@ -94,31 +114,50 @@ def propose(draft: dict[str, Any], priv: PrivateKey) -> dict[str, Any]:
     """First signature over termsHash = the proposal (§4.1)."""
     if draft.get("signatures"):
         raise ValueError("draft must be unsigned; any change is a new proposal")
+    # No agreementSig on the proposal entry (spec §4.1): the Agreement struct
+    # commits to the dealId the Runtime assigns when it accepts the proposal.
     entry = signing.sign_terms(signing.terms_hash(draft), priv, BUYER_AGENT_ID)
     return {**draft, "signatures": [entry]}
 
 
 def verify_acceptance(
-    proposed: dict[str, Any], accepted: dict[str, Any], seller_address: str
+    proposed: dict[str, Any],
+    accepted: dict[str, Any],
+    deal_id: str,
+    buyer_address: str,
+    seller_address: str,
 ) -> str:
     """Check the seller countersigned EXACTLY what we proposed (§4.1).
 
     Both hashes are recomputed locally — a claimed `termsHash` is never trusted
     — and the second signature must be the seller's over that identical value.
     A contract that differs in any member is a NEW proposal, not an acceptance.
-    Returns the agreed termsHash.
+
+    The accepted two-entry contract must also carry BOTH parties' §4.4
+    Agreement co-signatures (`agreementSig`) — the two-phase rule: they exist
+    only now, because the Agreement digest commits to the Runtime-assigned
+    deal id. Both are verified against the recomputed digest, exactly the
+    check the Coordination Engine's accept gate performs. Returns the agreed
+    termsHash.
     """
     ours = signing.terms_hash(proposed)
     theirs = signing.terms_hash(accepted)
     if ours != theirs:
         raise ValueError("accepted contract differs from the proposal — that is a new proposal, not an acceptance")
     sigs = accepted.get("signatures", [])
-    if len(sigs) != 2 or sigs[0] != proposed["signatures"][0]:
+    stripped = [{k: v for k, v in s.items() if k != "agreementSig"} for s in sigs]
+    if len(sigs) != 2 or stripped[0] != proposed["signatures"][0]:
         raise ValueError("acceptance must carry our untouched proposal signature plus the seller's")
     if sigs[1]["signerAgentId"] != accepted["sellerAgentId"]:
         raise ValueError("second signature must be the seller's")
     if not signing.verify_terms_signature(theirs, sigs[1], seller_address):
         raise ValueError("seller terms signature does not verify")
+    digest = settlement.agreement_digest(
+        deal_id, theirs, accepted["price"]["amount"], buyer_address, seller_address
+    )
+    for entry, address, who in ((sigs[0], buyer_address, "buyer"), (sigs[1], seller_address, "seller")):
+        if not settlement.verifies(digest, entry.get("agreementSig", ""), address):
+            raise ValueError(f"{who} agreementSig does not verify over the §4.4 Agreement digest")
     return theirs
 
 
@@ -203,7 +242,12 @@ def funding_envelope(
     means a buyer may supply only ITS OWN fields.
     """
     return signing.sign_party_envelope(
-        {"dealId": deal_id, "actorAgentId": BUYER_AGENT_ID,
+        # `kind` is part of the SIGNED object: the Runtime canonicalizes the
+        # whole wire payload minus "signature" (spec §6.2.1), so an envelope
+        # signed without its kind recovers a different address and is rejected
+        # as "not an active signing key of the signer".
+        {"kind": "funding-signatures", "dealId": deal_id,
+         "actorAgentId": BUYER_AGENT_ID,
          "termsHash": terms_hash_ref, "submission": submission},
         priv, BUYER_AGENT_ID,
     )
@@ -212,12 +256,12 @@ def funding_envelope(
 def verify_delivery(command: dict[str, Any], terms_hash_ref: str, seller_address: str) -> None:
     """Verify the seller's kite.contract.delivered end to end (§4.2).
 
-    Note what is NOT checked here: that `evidenceRef` names a real artifact.
-    That reference must have been REGISTERED against this agreement through the
-    Runtime's evidence intake (§6.2.1), and only the Runtime can confirm it — a
-    locally computed digest is a claim, not evidence. The buyer's check is that
-    the command is genuine and bound to these terms; the Runtime's is that the
-    evidence exists.
+    Note what is NOT checked here: that `evidenceId` names a real artifact, or
+    that `deliveryHash` matches the artifact registered under it. Both belong
+    to the Runtime's evidence intake (§6.2.1, §4.2), and only the Runtime can
+    confirm them — a locally computed digest is a claim, not evidence. The
+    buyer's check is that the command is genuine and bound to these terms; the
+    Runtime's is that the evidence exists and the hash matches it.
     """
     if command.get("commandType") != "kite.contract.delivered":
         raise ValueError("expected a kite.contract.delivered command")
@@ -228,7 +272,17 @@ def verify_delivery(command: dict[str, Any], terms_hash_ref: str, seller_address
         raise ValueError("payload must be an object")
     if command.get("payloadHash") != signing.sha256_ref(signing.canonical_bytes(payload)):
         raise ValueError("payloadHash does not commit to the payload")
-    if not payload.get("evidenceRef"):
-        raise ValueError("delivery must cite the evidenceRef the Runtime registered")
+    if not payload.get("evidenceId"):
+        raise ValueError("delivery must cite the evidenceId the Runtime issued at registration")
+    if not payload.get("deliveryHash", "").startswith("sha256:"):
+        raise ValueError("delivery must carry the sha256 deliveryHash the settlement layer will receive")
     if not signing.verify_command_signature(command, seller_address):
         raise ValueError("delivery command signature does not verify")
+    # The embedded settlement signature is checkable too (§4.4): the same
+    # Delivery digest the vault would verify, over the demo anchors.
+    digest = settlement.delivery_digest(
+        settlement.demo_deal_id32(command["dealId"]), terms_hash_ref,
+        payload["deliveryHash"], expiry=payload["expiry"],
+    )
+    if not settlement.verifies(digest, payload["sellerDeliverySig"], seller_address):
+        raise ValueError("sellerDeliverySig does not verify over the §4.4 Delivery digest")

@@ -1,0 +1,8 @@
+{
+  "agreementId": "agr_e2e",
+  "sequence": 2,
+  "event": "FUND_CONFIRMED",
+  "toState": "FULFILLING",
+  "proofHash": "0xdeadbeef",
+  "createdAt": "2026-08-09T07:02:00Z"
+}

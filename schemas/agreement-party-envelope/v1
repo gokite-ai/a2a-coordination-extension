@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2a.gokite.ai/schemas/agreement-party-envelope/v1",
+  "title": "Party-scoped interaction envelope",
+  "description": "The request object for the four party-only interactions — `funding`, `funding-signatures`, `evidence` and `proofs` (§6.2.1). Each names its actor and carries that actor's signature, because the transport in front of these is public: a transport credential authenticates the CALLER and MUST NOT substitute for the actor's signature (§4.2).\n\nThe Runtime MUST reject an envelope whose signature does not verify, and MUST check party membership against its OWN record of the agreement rather than against anything in this request.",
+  "type": "object",
+  "required": [
+    "kind",
+    "dealId",
+    "actorAgentId",
+    "signature"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "kind": {
+      "enum": [
+        "funding",
+        "funding-signatures",
+        "evidence",
+        "proofs"
+      ]
+    },
+    "dealId": {
+      "type": "string",
+      "description": "The Runtime agreement id. This — not any id inside `submission` — is the agreement the request acts on."
+    },
+    "actorAgentId": {
+      "$ref": "#/$defs/kiteDid",
+      "description": "Who is asking. The Runtime resolves this DID's active keys and requires the recovered signer to be one of them (§8)."
+    },
+    "termsHash": {
+      "$ref": "#/$defs/sha256",
+      "description": "Optional content anchor. When present it MUST equal the agreement's; the Runtime rejects a mismatch. Sending it pins the request to the terms the actor believes are in force, so a request built against superseded terms fails loudly instead of acting on the current ones."
+    },
+    "submission": {
+      "type": "object",
+      "description": "The payload, required on `funding-signatures` (a FundingSubmission) and `evidence` (an EvidenceSubmission), and absent on the two read kinds. Which schema applies is pinned by `kind` below — leaving it an untyped object let an `evidence` envelope carry an arbitrary submission and still validate, which is exactly the shape a Runtime must not accept: funding artifacts are write-once, so a submission that validates here and is rejected later can already have wedged the deal."
+    },
+    "signature": {
+      "type": "object",
+      "required": [
+        "profile",
+        "keyId",
+        "sig"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "profile": {
+          "const": "secp256k1-keccak-v1"
+        },
+        "keyId": {
+          "type": "string",
+          "description": "Actor DID plus the key's canonical thumbprint fragment (§8). The v1 normative check is agent-level: the signer recovered from `sig` MUST be an active authorized key of the DID this keyId names; matching the specific fragment-named key is a SHOULD."
+        },
+        "sig": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{130}$",
+          "description": "Recoverable secp256k1 ECDSA signature over keccak256(\"kite:a2a-agreement:funding:v1\" ‖ rfc8785(envelope without \"signature\")). The domain tag is distinct from the terms tag (§4.1) and the command tag (§4.2) so a signature made for one can never be replayed as another — note that all four party interactions share this one funding tag, so `kind` being inside the signed bytes is what stops a `proofs` envelope from being replayed as a `funding-signatures` one."
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "funding-signatures"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "submission"
+        ],
+        "properties": {
+          "submission": {
+            "$ref": "https://a2a.gokite.ai/schemas/funding-submission/v1"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "const": "evidence"
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "required": [
+          "submission"
+        ],
+        "properties": {
+          "submission": {
+            "$ref": "https://a2a.gokite.ai/schemas/agreement-evidence-submission/v1"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "kind": {
+            "enum": [
+              "funding",
+              "proofs"
+            ]
+          }
+        },
+        "required": [
+          "kind"
+        ]
+      },
+      "then": {
+        "not": {
+          "required": [
+            "submission"
+          ]
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "kiteDid": {
+      "type": "string",
+      "pattern": "^did:kite:[a-z0-9]([a-z0-9_-]*[a-z0-9])?:[a-z0-9]([a-z0-9_-]*[a-z0-9])?$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    }
+  }
+}

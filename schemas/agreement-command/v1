@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://a2a.gokite.ai/schemas/agreement-command/v1",
   "title": "AgreementCommand",
-  "description": "DRAFT — one immutable, signed, state-changing action against an agreement. The signed body is the RFC 8785 canonicalization of this object with `signature` omitted, prefixed by the domain-separation tag kite:a2a-agreement:command:v1.",
+  "description": "One immutable, signed, state-changing action against an agreement. The signed body is the RFC 8785 canonicalization of this object with `signature` omitted, prefixed by the domain-separation tag kite:a2a-agreement:command:v1.",
   "type": "object",
   "required": [
     "schema",
@@ -28,7 +28,7 @@
     },
     "commandType": {
       "type": "string",
-      "description": "Party command vocabulary for fixed_outcome/v1: the engine's kite.contract.* message types. Each value names exactly one recorded event (a transition kind); which edge it takes is resolved against the deal's current state, and a command not legal from that state is rejected as illegal_transition. Source of truth is the Coordination Engine's code (fulfill-engine pkg/model/model.go); this enum documents it. Proposal and acceptance are interaction kinds, not command types; funding is a Runtime chain observation; kite.contract.fulfill_started is a Runtime-to-seller notification, never a command.",
+      "description": "Party command vocabulary for fixed_outcome/v1: the engine's kite.contract.* message types. Each value names exactly one recorded event (a transition kind); which edge it takes is resolved against the deal's current state, and a command not legal from that state is rejected as illegal_transition. This closed enum is normative as published (spec §3): an implementation emitting or accepting a type outside it is non-conforming. Proposal and acceptance are interaction kinds, not command types; funding is a Runtime chain observation; kite.contract.fulfill_started is a Runtime-to-seller notification, never a command.",
       "enum": [
         "kite.contract.delivered",
         "kite.contract.accepted",
@@ -43,8 +43,8 @@
     },
     "expectedRevision": {
       "type": "integer",
-      "minimum": 0,
-      "description": "Optimistic-concurrency check against the agreement's current revision."
+      "minimum": 1,
+      "description": "Optimistic-concurrency check against the agreement's current revision. There is no opt-out: the member is required and MUST be at least 1, because revision 0 is the pre-transition state no command can legally target. A Runtime MUST reject 0 rather than read it as 'skip the check' (spec §4.2)."
     },
     "actorAgentId": {
       "type": "string",
@@ -56,7 +56,7 @@
     },
     "payload": {
       "type": "object",
-      "description": "The command-type-specific payload object (spec §4.2 defines each type's members, e.g. reasonCode for kite.contract.rejected, evidenceRef/sellerDeliverySig/expiry for kite.contract.delivered). May be empty ({}) for command types that carry no data. Embedded *Sig members are settlement-layer signatures (EIP-712), opaque strings to this extension."
+      "description": "The command-type-specific payload object. Its shape is enforced per commandType by the allOf conditionals below (spec §4.2): every member of every type is required — fixed_outcome/v1 settles on chain, so each payload carries its settlement signature and expiry, and no payload is ever the empty object. Unknown members are rejected. Embedded *Sig members are settlement-layer signatures (EIP-712 over the EscrowVault structs), opaque to this extension beyond their spelling."
     },
     "payloadHash": {
       "$ref": "#/$defs/sha256Ref",
@@ -78,21 +78,277 @@
     }
   },
   "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "commandType": {
+            "const": "kite.contract.delivered"
+          }
+        },
+        "required": [
+          "commandType"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/deliveredPayload"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "commandType": {
+            "const": "kite.contract.accepted"
+          }
+        },
+        "required": [
+          "commandType"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/acceptedPayload"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "commandType": {
+            "const": "kite.contract.rejected"
+          }
+        },
+        "required": [
+          "commandType"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/rejectedPayload"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "commandType": {
+            "const": "kite.contract.appealed"
+          }
+        },
+        "required": [
+          "commandType"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/appealedPayload"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "commandType": {
+            "const": "kite.contract.refund_consented"
+          }
+        },
+        "required": [
+          "commandType"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/refundConsentedPayload"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "commandType": {
+            "const": "kite.contract.arbiter_decided"
+          }
+        },
+        "required": [
+          "commandType"
+        ]
+      },
+      "then": {
+        "properties": {
+          "payload": {
+            "$ref": "#/$defs/arbiterDecidedPayload"
+          }
+        }
+      }
+    }
+  ],
   "$defs": {
     "sha256Ref": {
       "type": "string",
       "pattern": "^sha256:[0-9a-f]{64}$"
     },
+    "settlementSig": {
+      "type": "string",
+      "description": "EIP-712 settlement-layer signature over the corresponding EscrowVault struct — a DIFFERENT layer and digest from the command's own signature (§4.2). 0x-prefixed 65-byte r‖s‖v hex.",
+      "pattern": "^0x[0-9a-fA-F]{130}$"
+    },
+    "unixTime": {
+      "type": "integer",
+      "description": "Unix timestamp (seconds) bounding the embedded settlement signature. Zero is not a bound: the vault rejects an expired call, so the schema rejects the value that can never satisfy it.",
+      "minimum": 1
+    },
+    "deliveredPayload": {
+      "type": "object",
+      "required": [
+        "evidenceId",
+        "deliveryHash",
+        "sellerDeliverySig",
+        "expiry"
+      ],
+      "properties": {
+        "evidenceId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The id the Runtime returned when the delivery artifact was registered through the evidence interaction (§6.2.1/§6.3). An opaque identifier — NOT a hash: the Runtime refuses a delivered command citing an id it never issued for this agreement."
+        },
+        "deliveryHash": {
+          "$ref": "#/$defs/sha256Ref",
+          "description": "sha256 content hash of the registered delivery artifact. Its 32 raw digest bytes are the settlement layer's bytes32 deliveryHash — the EIP-712 Delivery struct member sellerDeliverySig commits to and the value the vault's markDelivered receives. The Runtime MUST verify it equals the content hash registered under evidenceId."
+        },
+        "sellerDeliverySig": {
+          "$ref": "#/$defs/settlementSig"
+        },
+        "expiry": {
+          "$ref": "#/$defs/unixTime"
+        }
+      },
+      "additionalProperties": false
+    },
+    "acceptedPayload": {
+      "type": "object",
+      "properties": {
+        "buyerAcceptanceSig": {
+          "$ref": "#/$defs/settlementSig"
+        },
+        "expiry": {
+          "$ref": "#/$defs/unixTime"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "buyerAcceptanceSig",
+        "expiry"
+      ]
+    },
+    "rejectedPayload": {
+      "type": "object",
+      "required": [
+        "reasonCode",
+        "buyerRejectionSig",
+        "expiry"
+      ],
+      "properties": {
+        "reasonCode": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-meaningful rejection reason, recorded in the agreement log. Its on-chain form is NORMATIVELY derived: the vault's bytes32 reasonHash = keccak256(UTF-8 reasonCode), and buyerRejectionSig commits to that derived value (spec §4.2)."
+        },
+        "buyerRejectionSig": {
+          "$ref": "#/$defs/settlementSig"
+        },
+        "expiry": {
+          "$ref": "#/$defs/unixTime"
+        }
+      },
+      "additionalProperties": false
+    },
+    "appealedPayload": {
+      "type": "object",
+      "properties": {
+        "sellerAppealSig": {
+          "$ref": "#/$defs/settlementSig"
+        },
+        "expiry": {
+          "$ref": "#/$defs/unixTime"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sellerAppealSig",
+        "expiry"
+      ]
+    },
+    "refundConsentedPayload": {
+      "type": "object",
+      "properties": {
+        "sellerConsentSig": {
+          "$ref": "#/$defs/settlementSig"
+        },
+        "expiry": {
+          "$ref": "#/$defs/unixTime"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "sellerConsentSig",
+        "expiry"
+      ]
+    },
+    "arbiterDecidedPayload": {
+      "type": "object",
+      "required": [
+        "decisionId",
+        "sellerBps",
+        "arbiterSig",
+        "expiry"
+      ],
+      "properties": {
+        "decisionId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Opaque decision identifier, recorded in the agreement log. Its on-chain form is NORMATIVELY derived: the vault's bytes32 decisionId = keccak256(UTF-8 decisionId), and arbiterSig commits to that derived value (spec §4.2)."
+        },
+        "sellerBps": {
+          "type": "integer",
+          "description": "Seller's share of the escrow in basis points, 0–10000.",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "arbiterSig": {
+          "$ref": "#/$defs/settlementSig"
+        },
+        "expiry": {
+          "$ref": "#/$defs/unixTime"
+        }
+      },
+      "additionalProperties": false
+    },
     "signature": {
       "type": "object",
-      "required": ["profile", "keyId", "sig"],
+      "required": [
+        "profile",
+        "keyId",
+        "sig"
+      ],
       "properties": {
         "profile": {
           "const": "secp256k1-keccak-v1"
         },
         "keyId": {
           "type": "string",
-          "description": "Actor DID plus key fragment, e.g. did:kite:pubco:seller-42#key-3; resolves to the actor's secp256k1 key (its on-chain EVM address). The signer recovered from sig MUST equal it."
+          "description": "Actor DID plus the key's canonical thumbprint fragment (spec §8), e.g. did:kite:pubco:seller-42#jkt:776efa727ed8ff52. The v1 normative check is agent-level: the signer recovered from sig MUST be an active authorized key of the DID this keyId names. Matching the specific fragment-named key is a SHOULD (spec §8)."
         },
         "sig": {
           "type": "string",

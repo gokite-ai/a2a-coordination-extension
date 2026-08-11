@@ -1,6 +1,6 @@
 {
   "schemaValid": true,
-  "payloadHash": "sha256:0a54cfc43106fa95e629afe7a086da9aa5a534eaa2a50f64a753c0f8c3c85680",
+  "payloadHash": "sha256:2d4df4919d449b638b70cc408f69ad6e7aec7401607e618b255dbf5f764561cc",
   "signatureValid": true,
   "recoveredAddress": "0x1563915e194d8cfba1943570603f7606a3115508",
   "actorRole": "seller"

@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": false,
+  "wireMatchesCatalog": true,
+  "note": "currentState is what makes this actionable: the attempted commandType alone does not tell a client what IS legal now."
+}

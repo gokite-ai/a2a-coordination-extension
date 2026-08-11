@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": false,
+  "wireMatchesCatalog": true,
+  "note": "The signature verified and the actor is real — it simply does not own this commandType (§5). commandType and actorAgentId together are what say why."
+}

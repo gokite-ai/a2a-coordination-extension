@@ -1,0 +1,8 @@
+{
+  "code": "illegal_transition",
+  "retriable": false,
+  "dealId": "deal_0123456789ab",
+  "commandId": "cmd_01",
+  "commandType": "kite.contract.accepted",
+  "currentState": "DELIVERED"
+}

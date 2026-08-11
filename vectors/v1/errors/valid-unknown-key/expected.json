@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": false,
+  "wireMatchesCatalog": true,
+  "note": "Distinct from invalid_signature: the signature was never checked, because the keyId did not resolve or was not valid at command time."
+}

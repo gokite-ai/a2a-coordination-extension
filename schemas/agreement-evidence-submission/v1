@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2a.gokite.ai/schemas/agreement-evidence-submission/v1",
+  "title": "Evidence submission",
+  "description": "The `submission` member of an `evidence` interaction (§6.2): one delivery artifact the SELLER registers against an agreement before it can be cited by a `delivered` command.\n\nSeller-only, and the Runtime MUST enforce it. A buyer able to register evidence could manufacture the backing for the other side's delivery claim, and the Runtime refuses a `delivered` command whose `evidenceId` was not issued for that same agreement — so registration is the authority, not the citation.\n\nThe agreement is taken from the ENVELOPE's `dealId`, never from anything inside this object: the actor was authorized for one agreement and the artifact must land on that one.",
+  "type": "object",
+  "required": ["type", "hash", "url"],
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "type": "string",
+      "minLength": 1,
+      "description": "What kind of artifact this is. Free-form in v1: intake validates the digest, not the taxonomy."
+    },
+    "hash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "description": "The artifact's content digest. This is what a `delivered` command's `deliveryHash` carries into the vault as a bytes32, so it is the binding commitment — the URL below is only where a copy can be fetched, and a fetched copy that hashes differently is not this evidence."
+    },
+    "url": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Where the artifact can be retrieved. NOT authoritative: it may rot, move, or serve different bytes later, which is exactly why `hash` and not this member is what the delivery claim commits to."
+    },
+    "source": { "type": "string" },
+    "format": {
+      "type": "string",
+      "description": "The artifact's media type, when known. Advisory."
+    },
+    "sizeBytes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "sections": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Optional sub-parts of a composite artifact."
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": { "type": "string" },
+      "description": "Free-form context. A consumer MUST NOT require any particular key."
+    }
+  }
+}

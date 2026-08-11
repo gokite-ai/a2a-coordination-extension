@@ -1,4 +1,4 @@
 {
   "schemaValid": false,
-  "schemaErrors": "data/expectedRevision must be >= 0"
+  "schemaErrors": "data/expectedRevision must be >= 1"
 }

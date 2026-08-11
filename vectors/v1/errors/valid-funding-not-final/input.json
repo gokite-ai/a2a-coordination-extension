@@ -1,0 +1,6 @@
+{
+  "code": "funding_not_final",
+  "retriable": true,
+  "dealId": "deal_0123456789ab",
+  "retryAfterSeconds": 15
+}

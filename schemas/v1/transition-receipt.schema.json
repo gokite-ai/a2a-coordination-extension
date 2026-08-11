@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://a2a.gokite.ai/schemas/agreement-transition-receipt/v1",
   "title": "AgreementTransitionReceipt",
-  "description": "DRAFT — signed proof that the Runtime accepted and committed one legal transition. Its lifecycle is owned by the Audit plane, which builds and manages receipts from the Runtime's hash-chained transition-proof record. The runtime signature covers ONLY the immutable transition fields (schema, receiptId, dealId, commandId, commandHash, fromState, toState, revision, recordedAt); auditStatus and auditReceiptRef are Audit-owned lifecycle metadata OUTSIDE the signed bytes, so their later updates cannot invalidate the signature. Distinct from the Audit receipt it references: the transition receipt proves what the Runtime accepted; the Audit receipt proves the corresponding domain event reached the append-only Audit log. They MUST NOT be presented as the same guarantee.",
+  "description": "Signed proof that the Runtime accepted and committed one legal transition. Its lifecycle is owned by the Audit plane, which builds and manages receipts from the Runtime's hash-chained transition-proof record. The runtime signature covers ONLY the immutable transition fields (schema, receiptId, dealId, commandId, commandHash, fromState, toState, revision, recordedAt); auditStatus and auditReceiptRef are Audit-owned lifecycle metadata OUTSIDE the signed bytes, so their later updates cannot invalidate the signature. Distinct from the Audit receipt it references: the transition receipt proves what the Runtime accepted; the Audit receipt proves the corresponding domain event reached the append-only Audit log. They MUST NOT be presented as the same guarantee.",
   "type": "object",
   "required": [
     "schema",
@@ -29,12 +29,12 @@
     "commandId": {
       "type": "string",
       "pattern": "^cmd_[A-Za-z0-9]+$",
-      "description": "Present when the transition was driven by a party command; absent on Runtime-driven transitions (chain observations, deadline expiries, auto-confirm), whose receipt-identity contract is a draft gap (spec §9.1)."
+      "description": "Present exactly when an AgreementCommand drove the transition. The split is by COMMAND, not by actor: absent on Runtime-driven transitions (chain observations, deadline expiries, auto-confirm) AND on CONTRACT_SIGNED, which is party-driven but arrives through the `acceptance` interaction rather than as a command, so there are no command bytes to name (spec §4.3, §6.3). The receipt-identity and idempotency contract for command-less transitions is a draft gap (spec §9.1)."
     },
     "commandHash": {
       "type": "string",
       "pattern": "^sha256:[0-9a-f]{64}$",
-      "description": "Hash of the accepted command; absent alongside commandId on Runtime-driven transitions."
+      "description": "Hash of the accepted command. Travels as a PAIR with commandId: present exactly when it is, and absent exactly when it is — on Runtime-driven transitions and on CONTRACT_SIGNED alike."
     },
     "fromState": {
       "$ref": "#/$defs/agreementState"
@@ -53,16 +53,25 @@
     "auditStatus": {
       "type": "string",
       "description": "Audit ingestion may still be pending when this receipt is returned — the proof package stays in_progress until the matching Audit event is durably appended.",
-      "enum": ["recorded", "pending"]
+      "enum": [
+        "recorded",
+        "pending"
+      ]
     },
     "auditReceiptRef": {
       "type": "string",
       "description": "Reference to the matching Audit receipt once durably appended."
     },
     "runtimeSignature": {
-      "type": ["object", "null"],
+      "type": [
+        "object",
+        "null"
+      ],
       "description": "null is a VALID value and a visible non-guarantee: an unsigned receipt MUST NOT be presented as proof of anything (a mock or pre-signing deployment emits these). This is distinct from receipt: null, which means no receipt exists at all. When present, sig is a secp256k1-keccak-v1 signature by the Runtime's own key over the immutable transition fields only — see the schema description.",
-      "required": ["keyId", "sig"],
+      "required": [
+        "keyId",
+        "sig"
+      ],
       "properties": {
         "keyId": {
           "type": "string",
@@ -97,5 +106,13 @@
         "EXPIRED"
       ]
     }
+  },
+  "dependentRequired": {
+    "commandId": [
+      "commandHash"
+    ],
+    "commandHash": [
+      "commandId"
+    ]
   }
 }

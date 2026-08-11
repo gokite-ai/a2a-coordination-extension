@@ -1,0 +1,5 @@
+{
+  "schemaValid": false,
+  "role": "buyer",
+  "schemaErrors": "data must NOT have additional properties"
+}

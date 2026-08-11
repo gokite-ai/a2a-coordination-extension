@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2a.gokite.ai/schemas/agreement-status/v1",
+  "title": "Agreement status",
+  "description": "The agreement's current state as the Runtime reports it — the `status` member of every reply that carries one (§6.3). This is the one-stop source for the anchors a party needs to build a settlement signature the EscrowVault will accept: the vault deal id, the receipt hash, and the CURRENT vault nonce. A client that reads only `state` and `revision` can follow the lifecycle but cannot sign settlement at all.",
+  "type": "object",
+  "required": ["dealId", "state", "revision", "updatedAt"],
+  "additionalProperties": false,
+  "properties": {
+    "dealId": {
+      "type": "string",
+      "description": "The Runtime's agreement id — the same value every interaction carries as dealId. NOT the EscrowVault deal id, which is derived from the funded Activation and appears under vault.dealId; conflating the two is a bug (§6.2.1)."
+    },
+    "state": {
+      "description": "The lifecycle state, uppercase (§3). Enumerated so an unknown state is a hard failure rather than a silently unhandled branch — a client that treats an unrecognised state as 'some other state' can sign against a deal that has already terminated. PROPOSED sits outside the transition table (it is the only state reachable without two signatures); the five terminal states are ACCEPTED, RESOLVED, CANCELLED, DEFAULTED and EXPIRED, each of which additionally self-loops on SETTLEMENT_OBSERVED without changing state.",
+      "enum": [
+        "PROPOSED",
+        "COMMITTED",
+        "FULFILLING",
+        "DELIVERED",
+        "ACCEPTED",
+        "REJECTED",
+        "DISPUTED",
+        "RESOLVED",
+        "CANCELLED",
+        "DEFAULTED",
+        "EXPIRED"
+      ]
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "The agreement's current revision. A command targets the NEXT transition, so a command's expectedRevision must equal this value; 0 is the pre-transition state of a freshly created agreement and is therefore never a legal expectedRevision (§4.2)."
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the Runtime last moved this agreement. Advisory: consumers order transitions by the proof chain's `sequence`, never by a timestamp (§6.3)."
+    },
+    "buyerAgentId": { "$ref": "#/$defs/kiteDid" },
+    "sellerAgentId": { "$ref": "#/$defs/kiteDid" },
+    "arbiterAgentId": {
+      "allOf": [{ "$ref": "#/$defs/kiteDid" }],
+      "description": "The contract-named arbiter. The only actor a Runtime may authorize for kite.contract.arbiter_decided, and for nothing else — an arbiter that can issue party commands collapses the role separation disputePolicy exists to create."
+    },
+    "termsHash": {
+      "$ref": "#/$defs/sha256",
+      "description": "The accepted contract's content anchor. A command whose termsHash differs from this MUST be rejected as terms_hash_mismatch."
+    },
+    "latestProofHash": {
+      "$ref": "#/$defs/sha256",
+      "description": "The newest transition proof's hash — the receiptHash every settlement signature quotes (§4.4). Absent when the Runtime has recorded no proofs yet. A party MAY read it here instead of walking the proofs chain, but MUST NOT infer it from a stale status."
+    },
+    "vault": {
+      "description": "The on-chain signing context, present once the deal exists on chain. Absent means 'not on chain yet', not 'unavailable' — a Runtime that cannot READ the chain MUST omit the block rather than emit a zeroed one, because a nonce 0 with an empty state is indistinguishable from a legitimately fresh deal and an agent would sign settlement against anchors that do not exist.",
+      "type": "object",
+      "required": ["dealId", "nonce"],
+      "additionalProperties": false,
+      "properties": {
+        "dealId": {
+          "$ref": "#/$defs/bytes32",
+          "description": "The EscrowVault deal id: dealIdFor(Activation) (§4.4), and the EIP-3009 nonce the buyer's authorization is bound to."
+        },
+        "nonce": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "The vault's CURRENT nonce for this deal. Settlement signatures quote it, so a party MUST take it from a fresh read rather than caching one."
+        },
+        "state": {
+          "type": "string",
+          "description": "The vault's own state for this deal, which is not the agreement state above: the vault tracks funds, the Runtime tracks the agreement."
+        },
+        "vaultAddress": { "$ref": "#/$defs/evmAddress" },
+        "chainId": { "type": "integer", "minimum": 1 }
+      }
+    }
+  },
+  "$defs": {
+    "kiteDid": {
+      "type": "string",
+      "pattern": "^did:kite:[a-z0-9]([a-z0-9_-]*[a-z0-9])?:[a-z0-9]([a-z0-9_-]*[a-z0-9])?$"
+    },
+    "sha256": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "bytes32": {
+      "type": "string",
+      "pattern": "^0x[0-9a-f]{64}$"
+    },
+    "evmAddress": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{40}$"
+    }
+  }
+}

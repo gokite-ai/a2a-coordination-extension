@@ -10,19 +10,20 @@
     "actorAgentId": "did:kite:haiku:seller-3",
     "termsHash": "sha256:feba188b56c1e0deba060f0284f9e26772f20802a8e95578a3a52d028e6308d4",
     "payload": {
-      "evidenceRef": "ev_7f3a",
+      "evidenceId": "ev_7f3a",
+      "deliveryHash": "sha256:9fe568c663bcffcef883d7bb9b1128e32b431bf32d9b2e4929005133897b16ad",
       "sellerDeliverySig": "0xcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
       "expiry": 1800000000
     },
-    "payloadHash": "sha256:0a54cfc43106fa95e629afe7a086da9aa5a534eaa2a50f64a753c0f8c3c85680",
+    "payloadHash": "sha256:2d4df4919d449b638b70cc408f69ad6e7aec7401607e618b255dbf5f764561cc",
     "occurredAt": "2026-08-07T09:30:00Z",
     "signature": {
       "profile": "secp256k1-keccak-v1",
       "keyId": "did:kite:haiku:seller-3#jkt:2cae26c62970654c",
-      "sig": "0x9cc574a6d15498e5fc95b9527791c6a6b721c122f722307a6c796bed058a44f168bb348b27d2e1f0c4f4472f474fdb0ea1a6897a3338279864bc589812e2de961c"
+      "sig": "0x1c9738dc953e9f22d8c02b69889dbb29da263c527c9d03a828ccdfb52acc89d04ed4c0d1547d9826f6a5f2ca6e9307c711afbd7e84f6ba4330356967bc967e261b"
     }
   },
   "preimage": "keccak256(domainTag ‖ rfc8785(signedObject without \"signature\"))",
-  "signature": "0xca4094046e920f91572d1b27c0e32eb8d6bbc67777aa536c6bb264eb67b9b2c63208927240b67866d20989428d782e4e0a6a53c9846efc82bc34fb897a69d9471c",
+  "signature": "0xa8b68396e77b31424dd0f1fd0612910059f8fa9cd96bc685f5d5656b4fdcdf9515f934cd0b9f005a42eb9bb32bd323c4fc72acd26245a0584149b0d365a9845a1b",
   "claimedSigner": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a"
 }

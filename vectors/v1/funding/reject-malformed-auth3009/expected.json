@@ -1,0 +1,5 @@
+{
+  "schemaValid": false,
+  "role": "buyer",
+  "schemaErrors": "data/auth3009 must have required property 'valid_after'; data/auth3009 must have required property 'valid_before'; data/auth3009 must NOT have additional properties; data/auth3009 must NOT have additional properties"
+}

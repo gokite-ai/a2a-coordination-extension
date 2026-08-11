@@ -1,0 +1,4 @@
+{
+  "schemaValid": false,
+  "schemaErrors": "data must have required property 'proofHash'"
+}

@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": false,
+  "wireMatchesCatalog": true,
+  "note": "The window closed and the deadline edge governs — an auto-confirm has already been recorded, so this is a lost race, not a malformed command."
+}
