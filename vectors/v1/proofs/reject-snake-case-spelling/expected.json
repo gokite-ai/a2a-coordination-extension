@@ -1,0 +1,4 @@
+{
+  "schemaValid": false,
+  "schemaErrors": "data must have required property 'toState'; data must have required property 'proofHash'; data must have required property 'createdAt'; data must NOT have additional properties; data must NOT have additional properties; data must NOT have additional properties; data must NOT have additional properties"
+}

@@ -4,12 +4,14 @@
 
 The wire contract is settled and pins against A2A **1.0**. The identifiers on
 this page and every signed preimage are fixed; the schemas, vectors and example
-agents are aligned to them. One release criterion is still open: §9 requires an
-independent implementation to execute *every* workflow step against a Runtime,
-and the conformance suite's state-machine cases have no live driver yet. See
+agents are aligned to them. The complete accepted outcome path has executed
+against a live Runtime, including the deployed reference seller, escrow,
+autonomous delivery, settlement, and the proof-chain read. Full conformance is
+still open because the suite does not yet drive every state-machine case in
+`conformance/transitions.json`. See
 [`spec/v1/coordination-workflow.md` §9.1–9.2](spec/v1/coordination-workflow.md)
-for the release state and the v1 limitations an implementer should design
-against.
+and [`conformance/live-validation.md`](conformance/live-validation.md) for the
+precise boundary.
 
 This repository is the published normative bundle for the
 **A2A Kite Coordination Extension**, identified by:
@@ -22,8 +24,9 @@ The Extension lets buyer and seller agents form and execute a binding
 agreement through the Kite Coordination Engine using the standard
 [A2A protocol](https://github.com/a2aproject/A2A) extension mechanism —
 typed, signed workflow commands; two-signature agreement over one
-`termsHash`; runtime-signed transition receipts; and independently
-verifiable audit proof packages. No fork of A2A, and no Kite SDK required:
+`termsHash`; runtime-signed transition receipts; and party-readable
+transition-proof chains. (Independently verifiable audit proof packages are
+a later addition — spec §9.2.) No fork of A2A, and no Kite SDK required:
 conformance is defined by wire behavior and cryptographic verification
 against the schemas and test vectors in this bundle.
 
@@ -32,11 +35,12 @@ against the schemas and test vectors in this bundle.
 | Path | Contents |
 |---|---|
 | `spec/v1/` | The normative specification |
-| `schemas/v1/` | JSON Schemas: `DealContract`, `AgreementCommand`, `AgreementTransitionReceipt`, error catalog |
-| `vectors/v1/` | 38 golden vectors: canonical bytes and hashes, signatures under every domain tag (including the cross-tag rejections), per-`commandType` schema cases, receipt signing |
-| `conformance/` | Language-neutral conformance suite. `python3 conformance/run.py` replays 61 offline checks with no Kite dependency; the state-machine cases need a live Runtime and are reported as skipped |
-| `examples/` | Non-normative example agents (buyer + seller), built on the official A2A SDK with no Kite code. They replay the vectors above, which is what makes those the protocol rather than one implementation's behaviour |
+| `schemas/v1/` | JSON Schemas. Signed objects: `DealContract`, `AgreementCommand`, `FundingSubmission`. Runtime artifacts: `AgreementTransitionProof`, `AgreementTransitionReceipt`. Interaction surface: `InteractionRequest`, `InteractionResponse`, `PartyEnvelope`, `AgreementStatus`, `FundingContext`, `Activation`, `EvidenceSubmission`. Errors: `AgreementDomainError` + the error catalog. Discovery: `AgentCardExtensionParams` |
+| `vectors/v1/` | 88 golden vectors: canonical bytes and hashes, signatures under every domain tag (including the cross-tag rejections), per-`commandType` schema cases, role-scoped funding-submission cases (§6.2.1), the transition-proof chain the `proofs` interaction serves (§6.3), receipt signing, the domain-error payloads and their catalog retry semantics, and the §4.4 EIP-712 settlement profile |
+| `conformance/` | Language-neutral conformance suite, no Kite dependency. `python3 conformance/run.py` replays the offline checks and exits 0 — a **document** check, not a conformance signal. `--strict` exits non-zero while any case is skipped. The live driver is not implemented; supplying `--endpoint` fails explicitly instead of claiming a pass. `live-validation.md` records the narrower live interoperability evidence |
+| `examples/` | Non-normative example agents (buyer + seller), no Kite code: A2A **1.0** (a2a-sdk 1.x, JSON-RPC binding, `raw` Parts, `A2A-Extensions` header) and real §4.4 settlement signatures. The buyer is a construction-focused peer demo. The seller additionally has a live mode that submits acceptance, funding, evidence, and delivery interactions to a Runtime and has completed the accepted outcome path in deployment |
 | `site/` | The landing page, also served at the repo root and at the extension URI itself |
+| `LICENSE` | Apache License 2.0 — covers everything in this bundle |
 
 The extension URI and each schema `$id` are live paths, not just names:
 `/extensions/coordination-workflow/v1/` serves the landing page and
@@ -49,13 +53,27 @@ pip install coincurve pycryptodome rfc8785 jsonschema
 python3 conformance/run.py
 ```
 
-Nothing in that command is Kite software. If it passes and your agent produces
-the same bytes as `vectors/v1/`, you speak this protocol.
+Nothing in that command is Kite software. A passing default run proves that an
+implementation reproduces the published document-level bytes and schemas; it
+is not a full conformance signal while live cases are skipped. Use `--strict`
+for a release gate.
 
 ## Versioning
 
 Backward-compatible additions may land within `v1`. Published `v1` files are
 append-only. Breaking changes get a new URI (`.../coordination-workflow/v2`).
+
+## License
+
+[Apache License 2.0](LICENSE), for everything here — the specification, the
+schemas, the vectors, the conformance suite and the example agents.
+
+The point of a permissive licence on a protocol bundle is that an independent
+implementation can copy from it: vendor the schemas, embed the vectors in your
+own test suite, lift the example agents' signing code. That is the intended
+use, not a tolerated one. The patent grant is why Apache-2.0 rather than MIT —
+implementing a protocol means implementing whatever it reads on, and a bare
+copyright licence leaves that unaddressed.
 
 ## Feedback
 

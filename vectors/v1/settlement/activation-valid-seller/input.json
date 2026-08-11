@@ -1,0 +1,26 @@
+{
+  "profile": "eip712",
+  "domain": {
+    "name": "KiteEscrowVault",
+    "version": "1",
+    "chainId": 2368,
+    "verifyingContract": "0xecececececececececececececececececececec"
+  },
+  "typeString": "Activation(bytes32 termsHash,address buyer,address buyerAgent,address sellerAgent,address sellerPayout,address arbiter,uint256 amount,uint64 fundingDeadline,uint64 deliveryWindow,uint64 deliveryConfirmationWindow,uint64 appealResponseWindow,uint64 arbitrationWindow)",
+  "struct": {
+    "termsHash": "sha256:feba188b56c1e0deba060f0284f9e26772f20802a8e95578a3a52d028e6308d4",
+    "buyer": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+    "buyerAgent": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+    "sellerAgent": "0x1563915e194d8cfba1943570603f7606a3115508",
+    "sellerPayout": "0x3333333333333333333333333333333333333333",
+    "arbiter": "0xe1fae9b4fab2f5726677ecfa912d96b0b683e6a9",
+    "amount": "25000000",
+    "fundingDeadline": 1800,
+    "deliveryWindow": 86400,
+    "deliveryConfirmationWindow": 172800,
+    "appealResponseWindow": 172800,
+    "arbitrationWindow": 604800
+  },
+  "signature": "0xbcd61c05a6f15e6b56908064e695690a721808641d650a06027564010859d58d6ea12f8fdf928dfec560ec5948c14040003b03a0a1279b487f9d591987123ba31b",
+  "claimedSigner": "0x1563915e194d8cfba1943570603f7606a3115508"
+}

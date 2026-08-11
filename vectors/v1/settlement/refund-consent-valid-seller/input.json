@@ -1,0 +1,19 @@
+{
+  "profile": "eip712",
+  "domain": {
+    "name": "KiteEscrowVault",
+    "version": "1",
+    "chainId": 2368,
+    "verifyingContract": "0xecececececececececececececececececececec"
+  },
+  "typeString": "RefundConsent(bytes32 dealId,bytes32 termsHash,bytes32 receiptHash,uint64 nonce,uint64 expiry)",
+  "struct": {
+    "dealId": "0xd1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1d1",
+    "termsHash": "sha256:feba188b56c1e0deba060f0284f9e26772f20802a8e95578a3a52d028e6308d4",
+    "receiptHash": "0xcececececececececececececececececececececececececececececececece",
+    "nonce": 0,
+    "expiry": 1800000000
+  },
+  "signature": "0xc97995d7f9d150447fee4ad7a28a9f8694a72e03505f065f9a7ad629291c56c71f900abd406d5bbea17522dc68e83740b4341d92f8b3025fb8cde285b1b545541b",
+  "claimedSigner": "0x1563915e194d8cfba1943570603f7606a3115508"
+}

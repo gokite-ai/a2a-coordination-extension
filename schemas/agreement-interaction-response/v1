@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2a.gokite.ai/schemas/agreement-interaction-response/v1",
+  "title": "Interaction response payload",
+  "description": "The decoded reply payload — the bytes inside the reply message's single `raw` Part (§6.3). Dispatched on `kind`, one branch per interaction.\n\nThe reply is `raw`, never `data`, for the same reason the request is: a `google.protobuf.Value` has only a double number type, so an integer such as `revision` round-trips as `6.0` and any signature over the canonical bytes breaks. Replies carry counter-signed objects, so they need the same byte fidelity as requests.",
+  "oneOf": [
+    { "$ref": "#/$defs/agreementResult" },
+    { "$ref": "#/$defs/agreementStatus" },
+    { "$ref": "#/$defs/agreementFunding" },
+    { "$ref": "#/$defs/agreementFundingAccepted" },
+    { "$ref": "#/$defs/agreementEvidenceRecorded" },
+    { "$ref": "#/$defs/agreementProofs" }
+  ],
+  "$defs": {
+    "agreementResult": {
+      "title": "agreement-result",
+      "description": "The answer to every state-changing interaction (`proposal`, `acceptance`, `command`). `receipt` and `status` are two DISTINCT objects (§4.3) and the shape keeps both members so a later minor version can populate the receipt without a shape change.",
+      "type": "object",
+      "required": ["kind", "receipt", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "agreement-result" },
+        "receipt": {
+          "type": "null",
+          "description": "ALWAYS null in v1 (§4.3, §6.3). This is the shape of every v1 state-changing reply, not a transient condition: the receipt is an Audit-plane artifact produced after the reply, and the disclosure operation that would return it is out of v1. Typed as null rather than omitted so a client cannot mistake 'not produced' for 'the Runtime forgot the member'. Read transition evidence from the `proofs` chain instead, and confirm the transition landed with `status`."
+        },
+        "status": { "$ref": "https://a2a.gokite.ai/schemas/agreement-status/v1" }
+      }
+    },
+    "agreementStatus": {
+      "title": "agreement-status",
+      "description": "The answer to a `status` interaction.",
+      "type": "object",
+      "required": ["kind", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "agreement-status" },
+        "status": { "$ref": "https://a2a.gokite.ai/schemas/agreement-status/v1" }
+      }
+    },
+    "agreementFunding": {
+      "title": "agreement-funding",
+      "description": "The answer to a `funding` read.",
+      "type": "object",
+      "required": ["kind", "funding"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "agreement-funding" },
+        "funding": { "$ref": "https://a2a.gokite.ai/schemas/agreement-funding-context/v1" }
+      }
+    },
+    "agreementFundingAccepted": {
+      "title": "agreement-funding-accepted",
+      "description": "The answer to `funding-signatures`. It returns the agreement STATUS, not a funding context: recording an artifact produces no transition of its own, so the useful fact is where the agreement now stands. A party that needs to see which artifacts are present issues a fresh `funding` read — which is also how it observes a write-once rejection.",
+      "type": "object",
+      "required": ["kind", "status"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "agreement-funding-accepted" },
+        "status": { "$ref": "https://a2a.gokite.ai/schemas/agreement-status/v1" }
+      }
+    },
+    "agreementEvidenceRecorded": {
+      "title": "agreement-evidence-recorded",
+      "description": "The answer to `evidence`. The returned id is what a later `delivered` command cites; the Runtime refuses a command citing an id it did not issue for that agreement.",
+      "type": "object",
+      "required": ["kind", "evidenceId"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "agreement-evidence-recorded" },
+        "evidenceId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "agreementProofs": {
+      "title": "agreement-proofs",
+      "description": "The answer to a `proofs` read: the Runtime's hash-chained transition record, newest last. Consumers MUST order by `sequence` rather than array position, and MUST verify the chain links.",
+      "type": "object",
+      "required": ["kind", "proofs"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "agreement-proofs" },
+        "proofs": {
+          "type": "array",
+          "items": { "$ref": "https://a2a.gokite.ai/schemas/agreement-transition-proof/v1" }
+        }
+      }
+    }
+  }
+}

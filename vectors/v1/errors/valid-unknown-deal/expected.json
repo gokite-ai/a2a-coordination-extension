@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": false,
+  "wireMatchesCatalog": true,
+  "note": "Only dealId is meaningful here: nothing else about the request could be resolved once the agreement did not."
+}

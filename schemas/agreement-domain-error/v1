@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2a.gokite.ai/schemas/agreement-domain-error/v1",
+  "title": "Agreement domain error payload",
+  "description": "The object a Runtime puts in JSON-RPC `error.data` when it rejects an interaction on DOMAIN grounds — the deal's state, the actor's authority, a stale revision, a reused commandId — as opposed to a malformed request. Domain rejections travel under the implementation-defined JSON-RPC code -32010 (spec §7) precisely so a client can tell them apart from -32602 'your request was malformed' without parsing prose: -32602 means fix the bytes, -32010 means the bytes were fine and the Runtime refused. `code` and `retriable` are the two members a client may branch on; everything else is context for the branch it picks.",
+  "type": "object",
+  "required": ["code", "retriable"],
+  "additionalProperties": false,
+  "properties": {
+    "code": {
+      "description": "The catalog code (schemas/v1/error-catalog.json). Enumerated here so an unknown code is a schema failure rather than a silently unhandled branch.",
+      "enum": [
+        "invalid_command_schema",
+        "unsupported_extension_version",
+        "invalid_signature",
+        "unknown_key",
+        "unauthorized_actor",
+        "unknown_deal",
+        "terms_hash_mismatch",
+        "payload_hash_mismatch",
+        "revision_conflict",
+        "idempotency_conflict",
+        "illegal_transition",
+        "deadline_exceeded",
+        "evidence_not_validated",
+        "funding_not_final",
+        "rate_limited",
+        "internal_error"
+      ]
+    },
+    "retriable": {
+      "type": "boolean",
+      "description": "Normative, and MUST match the catalog entry for `code`. false means retrying the IDENTICAL request cannot succeed — the client must change the request or wait for the state to change. It is carried on the wire rather than left to a client-side table so a client that has not vendored the catalog still retries correctly."
+    },
+    "dealId": {
+      "type": "string",
+      "description": "The agreement the rejection is about, when one was resolved."
+    },
+    "commandId": {
+      "type": "string",
+      "description": "The rejected command's id. REQUIRED in practice on idempotency_conflict, which is otherwise not actionable: the client cannot tell which of its in-flight ids collided."
+    },
+    "currentRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "The agreement's actual current revision. Present on revision_conflict so the retry is one round trip rather than two — a client MAY resubmit against this value instead of refetching status, and this is the whole reason revision_conflict is the retriable case implementers get wrong."
+    },
+    "expectedRevision": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "The stale value the rejected command carried, echoed back on revision_conflict so the client can confirm which attempt lost the race. Accepts 0 here, unlike the command schema, because this is a report of what arrived — including a value the Runtime rejected as out of range."
+    },
+    "currentState": {
+      "type": "string",
+      "description": "The agreement's state at rejection time. Present on illegal_transition, where knowing the attempted commandType alone does not tell the client what IS legal now."
+    },
+    "commandType": {
+      "type": "string",
+      "description": "The commandType that was refused, on illegal_transition and unauthorized_actor."
+    },
+    "actorAgentId": {
+      "type": "string",
+      "description": "The actor the Runtime resolved, on unauthorized_actor and invalid_signature."
+    },
+    "retryAfterSeconds": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "How long to wait before retrying, on rate_limited and funding_not_final. A client MUST honour it rather than choosing its own backoff."
+    }
+  },
+  "examples": [
+    {
+      "code": "revision_conflict",
+      "retriable": true,
+      "dealId": "deal_0123456789ab",
+      "commandId": "cmd_01",
+      "expectedRevision": 5,
+      "currentRevision": 7
+    },
+    {
+      "code": "idempotency_conflict",
+      "retriable": false,
+      "dealId": "deal_0123456789ab",
+      "commandId": "cmd_conflict"
+    },
+    {
+      "code": "illegal_transition",
+      "retriable": false,
+      "dealId": "deal_0123456789ab",
+      "commandType": "kite.contract.accepted",
+      "currentState": "DELIVERED"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "schemaValid": false,
+  "schemaErrors": "data must have required property 'retriable'",
+  "note": "retriable travels on the wire so a client that has not vendored the catalog still retries correctly; omitting it is not optional."
+}

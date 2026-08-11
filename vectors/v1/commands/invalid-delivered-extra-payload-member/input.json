@@ -1,0 +1,23 @@
+{
+  "schema": "https://a2a.gokite.ai/schemas/agreement-command/v1",
+  "commandId": "cmd_extradelivered",
+  "commandType": "kite.contract.delivered",
+  "dealId": "deal_0123456789ab",
+  "expectedRevision": 3,
+  "actorAgentId": "did:kite:haiku:seller-3",
+  "termsHash": "sha256:feba188b56c1e0deba060f0284f9e26772f20802a8e95578a3a52d028e6308d4",
+  "payload": {
+    "evidenceId": "ev_7f3a",
+    "deliveryHash": "sha256:9fe568c663bcffcef883d7bb9b1128e32b431bf32d9b2e4929005133897b16ad",
+    "sellerDeliverySig": "0xcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd",
+    "expiry": 1800000000,
+    "anything": true
+  },
+  "payloadHash": "sha256:f8cc0eaf990a57565ba7cd40638c0b12e0414be02ec13545e6050533e9acf1a2",
+  "occurredAt": "2026-08-07T09:30:00Z",
+  "signature": {
+    "profile": "secp256k1-keccak-v1",
+    "keyId": "did:kite:haiku:seller-3#jkt:2cae26c62970654c",
+    "sig": "0x82d6c7e5fc4c8656be362680228d2fd9ce5e6baca3a01818fbc3f2ef8f8ef8b253b8f4b4c9e42e11bb030f26a5d558076c1778427d52168d456b7463a236b4ac1c"
+  }
+}

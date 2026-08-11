@@ -1,0 +1,11 @@
+{
+  "buyerWallet": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a",
+  "auth3009": {
+    "valid_after": "0",
+    "valid_before": "1900000000",
+    "v": 27,
+    "r": "0xabababababababababababababababababababababababababababababababab",
+    "s": "0xcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd"
+  },
+  "expectedDealId": "0xdeadbeef"
+}

@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": false,
+  "wireMatchesCatalog": true,
+  "note": "actorAgentId names the actor whose key the Runtime resolved and verified against — without it a client cannot tell a wrong key from a wrong signer."
+}

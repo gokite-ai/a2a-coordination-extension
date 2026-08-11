@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2a.gokite.ai/schemas/agreement-interaction-request/v1",
+  "title": "Interaction request payload",
+  "description": "The decoded request payload — the bytes inside the `raw` Part of a SendMessage whose media type is the Extension's command media type (§6.1, §6.2). Dispatched on `kind`.\n\nThis object is what makes the Extension self-describing on the request side: every other schema in the bundle defines an object CARRIED by an interaction, and until this one existed an implementer had to infer the carrier itself from prose examples.\n\nA Runtime MUST require Extension opt-in BOTH ways before reading this at all — the `A2A-Extensions` HTTP header and the message's `extensions` array (§2.2) — so a caller can never end up in an agreement flow it did not declare.",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/proposal"
+    },
+    {
+      "$ref": "#/$defs/acceptance"
+    },
+    {
+      "$ref": "#/$defs/command"
+    },
+    {
+      "$ref": "#/$defs/status"
+    },
+    {
+      "$ref": "https://a2a.gokite.ai/schemas/agreement-party-envelope/v1"
+    }
+  ],
+  "$defs": {
+    "proposal": {
+      "title": "proposal",
+      "description": "Submit final terms carrying the FIRST signature. Sent by the buyer.\n\n`dealId` is not permitted: the Runtime mints the agreement id, so a caller supplying one is either guessing or trying to act on an agreement that already exists — and this branch is additionalProperties:false, so it is rejected rather than ignored.",
+      "type": "object",
+      "required": [
+        "kind",
+        "contract"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "proposal"
+        },
+        "contract": {
+          "$ref": "https://a2a.gokite.ai/schemas/deal-contract/v1",
+          "description": "Exactly ONE signatures entry, enforced below. The Runtime recomputes termsHash from the contract's own canonical bytes and MUST NOT trust a client-supplied value (§4.1)."
+        }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "contract": {
+              "properties": {
+                "signatures": {
+                  "minItems": 1,
+                  "maxItems": 1
+                }
+              },
+              "required": [
+                "signatures"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "acceptance": {
+      "title": "acceptance",
+      "description": "Countersign the identical termsHash. The countersignature inside the contract is the SELLER's, but either party — or a relay acting for them — may deliver this interaction: the sender is not authenticated, and authority derives from the contract's two signatures over the identical termsHash, not from who submits them (§6.2).",
+      "type": "object",
+      "required": [
+        "kind",
+        "dealId",
+        "contract"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "acceptance"
+        },
+        "dealId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contract": {
+          "$ref": "https://a2a.gokite.ai/schemas/deal-contract/v1",
+          "description": "Exactly TWO signatures entries, enforced below: one from the buyer and one from the seller. Two signatures from the same party are not two-of-two, which the deal-contract schema's own rules reject."
+        }
+      },
+      "allOf": [
+        {
+          "properties": {
+            "contract": {
+              "properties": {
+                "signatures": {
+                  "minItems": 2,
+                  "maxItems": 2
+                }
+              },
+              "required": [
+                "signatures"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "command": {
+      "title": "command",
+      "description": "Submit one signed AgreementCommand. The command object stays byte-identical end to end: its signature covers the bytes as sent, so a Runtime canonicalizes THOSE rather than a re-serialization of a decoded copy.",
+      "type": "object",
+      "required": [
+        "kind",
+        "command"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "command"
+        },
+        "command": {
+          "$ref": "https://a2a.gokite.ai/schemas/agreement-command/v1"
+        }
+      }
+    },
+    "status": {
+      "title": "status",
+      "description": "Read current state and revision. The only interaction that is not party-scoped: a status read carries no signature and reveals no party-private material.",
+      "type": "object",
+      "required": [
+        "kind",
+        "dealId"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "status"
+        },
+        "dealId": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

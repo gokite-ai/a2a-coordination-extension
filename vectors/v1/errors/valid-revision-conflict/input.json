@@ -1,0 +1,8 @@
+{
+  "code": "revision_conflict",
+  "retriable": true,
+  "dealId": "deal_0123456789ab",
+  "commandId": "cmd_01",
+  "expectedRevision": 5,
+  "currentRevision": 7
+}

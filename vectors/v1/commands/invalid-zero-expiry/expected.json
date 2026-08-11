@@ -1,0 +1,4 @@
+{
+  "schemaValid": false,
+  "schemaErrors": "data/payload/expiry must be >= 1; data must match \"then\" schema"
+}

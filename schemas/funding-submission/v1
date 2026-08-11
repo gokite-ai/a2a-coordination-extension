@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2a.gokite.ai/schemas/funding-submission/v1",
+  "title": "FundingSubmission",
+  "description": "The `submission` object a party delivers inside a funding-signatures interaction (spec §6.2.1). Role binding is real, not shape-guessed: a submission is only meaningful once the enclosing envelope's actorAgentId is resolved to a party, so a conformant Runtime validates against `$defs/buyerSubmission` or `$defs/sellerSubmission` according to that RESOLVED role (this is what the Runtime's authorizeFundingSubmission(role, sub) does). The top-level `oneOf` is a role-agnostic well-formedness gate only — it accepts a submission that is valid for exactly one role, but it cannot tell whether the sender is entitled to that role. Each role's `additionalProperties: false` is what forbids a party from carrying the other party's artifacts.",
+  "type": "object",
+  "oneOf": [
+    {
+      "$ref": "#/$defs/buyerSubmission"
+    },
+    {
+      "$ref": "#/$defs/sellerSubmission"
+    }
+  ],
+  "$defs": {
+    "auth3009": {
+      "title": "Auth3009",
+      "description": "The buyer's EIP-3009 payment authorization as produced by the funding-authorization issuer. Wire field names are snake_case to match the issuer's output (Passport A2AAuth3009); a camelCase variant is a different, invalid object.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "valid_after",
+        "valid_before",
+        "v",
+        "r",
+        "s"
+      ],
+      "properties": {
+        "valid_after": {
+          "type": "string",
+          "pattern": "^[0-9]+$",
+          "description": "EIP-3009 validAfter, a decimal Unix-seconds string."
+        },
+        "valid_before": {
+          "type": "string",
+          "pattern": "^[0-9]+$",
+          "description": "EIP-3009 validBefore, a decimal Unix-seconds string."
+        },
+        "v": {
+          "type": "integer",
+          "enum": [
+            27,
+            28
+          ],
+          "description": "ECDSA recovery id."
+        },
+        "r": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{64}$",
+          "description": "Signature r, a bytes32."
+        },
+        "s": {
+          "type": "string",
+          "pattern": "^0x[0-9a-fA-F]{64}$",
+          "description": "Signature s, a bytes32."
+        }
+      }
+    },
+    "expectedDealId": {
+      "type": "string",
+      "description": "The EscrowVault deal id (settlement layer's dealIdFor(Activation), §4.4) the auth3009 EIP-3009 nonce is bound to — a bytes32, NOT the Runtime agreement id the interactions carry as dealId; conflating the two is a bug. Returned by the funding-authorization issuer together with auth3009 (the buyer cannot read it back from funding/status, which only expose it after funding). 0x-prefixed, exactly 32 bytes of lowercase hex.",
+      "pattern": "^0x[0-9a-f]{64}$"
+    },
+    "buyerSubmission": {
+      "title": "BuyerFundingSubmission",
+      "description": "What the BUYER may supply. sellerActivationSig is absent from properties, so additionalProperties:false rejects a buyer submission that carries it.",
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "buyerWallet": {
+          "type": "string",
+          "description": "The custodial wallet the Activation is built around and the EIP-3009 spends from; a 20-byte EVM address.",
+          "pattern": "^0x[0-9a-fA-F]{40}$"
+        },
+        "buyerActivationSig": {
+          "type": "string",
+          "description": "The buyer agent's Activation EIP-712 signature (secp256k1-keccak-v1, 65-byte r‖s‖v). The trailing recovery byte MUST be 27 (0x1b) or 28 (0x1c): the settlement layer's SignatureChecker refuses anything else, and funding artifacts are write-once, so a value with any other v permanently wedges the deal.",
+          "pattern": "^0x[0-9a-fA-F]{128}(1b|1B|1c|1C)$"
+        },
+        "auth3009": {
+          "$ref": "#/$defs/auth3009"
+        },
+        "expectedDealId": {
+          "$ref": "#/$defs/expectedDealId"
+        }
+      },
+      "dependentRequired": {
+        "auth3009": [
+          "expectedDealId"
+        ]
+      }
+    },
+    "sellerSubmission": {
+      "title": "SellerFundingSubmission",
+      "description": "What the SELLER may supply: its Activation co-signature and nothing else. Every buyer field is absent from properties, so additionalProperties:false rejects a seller submission that carries one.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sellerActivationSig"
+      ],
+      "properties": {
+        "sellerActivationSig": {
+          "type": "string",
+          "description": "The seller agent's Activation EIP-712 signature over the SAME Activation digest; 65-byte r‖s‖v.",
+          "pattern": "^0x[0-9a-fA-F]{128}(1b|1B|1c|1C)$"
+        }
+      }
+    }
+  },
+  "dependentRequired": {
+    "auth3009": [
+      "expectedDealId"
+    ],
+    "expectedDealId": [
+      "auth3009"
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "schemaValid": false,
+  "role": "buyer",
+  "schemaErrors": "data must have property expectedDealId when property auth3009 is present"
+}

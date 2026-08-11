@@ -1,0 +1,6 @@
+{
+  "code": "internal_error",
+  "retriable": true,
+  "dealId": "deal_0123456789ab",
+  "commandId": "cmd_01"
+}

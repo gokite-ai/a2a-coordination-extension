@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2a.gokite.ai/schemas/agreement-funding-context/v1",
+  "title": "Funding context",
+  "description": "The `funding` member of the `agreement-funding` reply (§6.2, §6.3): the Activation a party must sign, the chain context that fixes the EIP-712 domain, and which write-once artifacts have already arrived.\n\nThe `have*` flags are the protocol's only window onto write-once state. §6.2.1 requires a rejected divergent write to be VISIBLE to the parties, and this read is where they see it: a flag already true means that artifact is settled and a different value will not replace it. Omitting a flag for an artifact the Runtime tracks therefore breaks the write-once contract from the parties' side even when the Runtime enforces it correctly internally.",
+  "type": "object",
+  "required": [
+    "phase",
+    "haveBuyerWallet",
+    "haveBuyerActivationSig",
+    "haveSellerActivationSig",
+    "haveAuth3009",
+    "haveExpectedDealId"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "activation": {
+      "$ref": "https://a2a.gokite.ai/schemas/agreement-activation/v1",
+      "description": "The Activation both agents sign. Absent before the Runtime has assembled it; incomplete (no `buyer`) until the buyer's wallet arrives — see that schema's note on why a partial Activation is not signable."
+    },
+    "dealId": {
+      "type": "string",
+      "pattern": "^0x[0-9a-f]{64}$",
+      "description": "The EscrowVault deal id, dealIdFor(Activation). Present only AFTER funding, which is why a buyer cannot obtain it here in time to bind its EIP-3009 nonce — that value comes from the funding-authorization issuer as `expectedDealId` (§6.2.1)."
+    },
+    "phase": {
+      "type": "string",
+      "description": "The Runtime's own funding phase. Free-form: it reports progress toward FUND_CONFIRMED and a client MUST NOT drive decisions from it — the agreement `state` and the `have*` flags are the contractual facts."
+    },
+    "vaultAddress": {
+      "$ref": "#/$defs/evmAddress",
+      "description": "The EscrowVault. Part of the EIP-712 domain, so a party MUST take it from here rather than from configuration: signing against a different verifying contract produces a signature the vault rejects."
+    },
+    "chainId": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "The settlement chain. Also part of the EIP-712 domain, and for the same reason."
+    },
+    "haveBuyerWallet": {
+      "type": "boolean",
+      "description": "Whether the buyer's wallet address has been recorded. Until it is, the Activation is incomplete and neither party can derive the deal id."
+    },
+    "haveBuyerActivationSig": {
+      "type": "boolean"
+    },
+    "haveSellerActivationSig": {
+      "type": "boolean"
+    },
+    "haveAuth3009": {
+      "type": "boolean",
+      "description": "Whether the buyer's EIP-3009 authorization has been recorded."
+    },
+    "haveExpectedDealId": {
+      "type": "boolean",
+      "description": "Whether the buyer's claimed `expectedDealId` has been recorded. It is reported separately from `haveAuth3009` rather than folded into it because the two can only be written together (§6.2.1) — so the pair disagreeing is exactly the corruption a party needs to be able to SEE. Without this flag a wrong expectedDealId, once written, silently blocks every fund() broadcast with no way for either party to tell that the stored value is the problem."
+    },
+    "rejectedFields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Funding artifacts a later submission tried to CHANGE and which were refused, because each is write-once (§6.2.1).\n\nThis is where the refusal becomes visible, and §6.2.1 requires it to be. funding-signatures is accepted rather than applied (§6.4): the reply means the submission was taken, and the merge happens after it, so an overwrite still gets a success. A party that resubmits a corrected value MUST check here rather than trusting the acceptance — a name in this list means the stored value will not change."
+    }
+  },
+  "$defs": {
+    "evmAddress": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{40}$"
+    }
+  }
+}

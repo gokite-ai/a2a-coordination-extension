@@ -1,0 +1,5 @@
+{
+  "schemaValid": false,
+  "role": "buyer",
+  "schemaErrors": "data/expectedDealId must match pattern \"^0x[0-9a-f]{64}$\""
+}

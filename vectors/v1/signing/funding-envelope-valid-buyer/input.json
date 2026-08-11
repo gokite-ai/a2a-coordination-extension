@@ -2,6 +2,7 @@
   "profile": "secp256k1-keccak-v1",
   "domainTag": "kite:a2a-agreement:funding:v1",
   "signedObject": {
+    "kind": "funding-signatures",
     "dealId": "deal_0123456789ab",
     "actorAgentId": "did:kite:acme:buyer-17",
     "termsHash": "sha256:feba188b56c1e0deba060f0284f9e26772f20802a8e95578a3a52d028e6308d4",
@@ -10,6 +11,6 @@
     }
   },
   "preimage": "keccak256(domainTag ‖ rfc8785(signedObject without \"signature\"))",
-  "signature": "0xca4094046e920f91572d1b27c0e32eb8d6bbc67777aa536c6bb264eb67b9b2c63208927240b67866d20989428d782e4e0a6a53c9846efc82bc34fb897a69d9471c",
+  "signature": "0xa8b68396e77b31424dd0f1fd0612910059f8fa9cd96bc685f5d5656b4fdcdf9515f934cd0b9f005a42eb9bb32bd323c4fc72acd26245a0584149b0d365a9845a1b",
   "claimedSigner": "0x19e7e376e7c213b7e7e7e46cc70a5dd086daff2a"
 }

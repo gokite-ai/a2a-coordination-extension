@@ -1,0 +1,5 @@
+{
+  "schemaValid": false,
+  "role": "buyer",
+  "schemaErrors": "data/buyerActivationSig must match pattern \"^0x[0-9a-fA-F]{128}(1b|1B|1c|1C)$\""
+}

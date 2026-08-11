@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": false,
+  "wireMatchesCatalog": true,
+  "note": "No dealId: a version the Runtime does not support is refused before an agreement is formed, so there is nothing to name yet."
+}

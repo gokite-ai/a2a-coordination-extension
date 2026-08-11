@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": true,
+  "wireMatchesCatalog": true,
+  "note": "currentRevision is what makes this one round trip instead of two: the client rebuilds against 7 without refetching status."
+}

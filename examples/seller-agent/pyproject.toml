@@ -3,19 +3,23 @@ name = "kite-example-seller-agent"
 version = "0.0.1"
 description = "Non-normative example seller agent for the A2A Kite Coordination Extension"
 requires-python = ">=3.10"
+# Same terms as the bundle these examples belong to. Stated here as well
+# as at the bundle root because a packaged example travels on its own:
+# whoever installs it from this directory never sees the root LICENSE.
+license = "Apache-2.0"
 # Deliberately no Kite dependency: official A2A SDK + generic crypto/JSON
 # tooling only. coincurve is libsecp256k1 (recoverable ECDSA) and pycryptodome
 # supplies keccak-256 — the two primitives secp256k1-keccak-v1 needs, both
-# ordinary Ethereum-ecosystem libraries rather than anything Kite-specific. a2a-sdk is pinned to the 0.3 API generation these examples
-# are written against — bump to 1.x deliberately, adapting the imports.
+# ordinary Ethereum-ecosystem libraries rather than anything Kite-specific.
+# a2a-sdk 1.x is the A2A 1.0 generation this spec requires (§6): proto-shaped
+# Messages, raw Parts, the JSON-RPC binding, and the A2A-Extensions header.
 dependencies = [
-    "a2a-sdk[http-server]>=0.3,<0.4",
+    "a2a-sdk[http-server]>=1.1,<2",
     "uvicorn>=0.30",
     "httpx>=0.27",
     "coincurve>=20.0",
     "pycryptodome>=3.20",
     "rfc8785>=0.1",
-    "jsonschema>=4.21",
 ]
 
 [project.scripts]
@@ -27,3 +31,8 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[project.optional-dependencies]
+# Signing-parity + transport round-trip tests (the latter drives the real
+# buyer client against this server in-process).
+test = ["pytest>=8.0", "pytest-asyncio>=0.23"]

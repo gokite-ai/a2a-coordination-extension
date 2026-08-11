@@ -1,0 +1,8 @@
+{
+  "agreementId": "agr_e2e",
+  "sequence": 0,
+  "event": "CONTRACT_SIGNED",
+  "toState": "COMMITTED",
+  "proofHash": "sha256:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+  "createdAt": "2026-08-09T07:01:00Z"
+}

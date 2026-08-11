@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2a.gokite.ai/schemas/agreement-activation/v1",
+  "title": "Activation",
+  "description": "The deal's pinned terms as both agents sign them, and the struct the EscrowVault hashes into the deal id. It is returned inside the `funding` interaction's reply (§6.2) so a party can sign it, which is why it needs a published spelling: an agent that guesses wrong reads nulls and signs nothing.\n\nMembers are camelCase like every other object in this contract. A Runtime whose settlement layer or storage spells them otherwise MUST map them at the edge — the same rule §6.3 states for the proofs payload, and for the same reason.\n\nCRITICAL: this renaming is a WIRE concern only. dealIdFor(Activation) hashes the EIP-712 struct in its ABI field ORDER (§4.4), not this JSON. Reordering members here, or treating the JSON key order as significant, changes nothing on chain — but a client that reconstructs the struct in the wrong ORDER derives a different deal id and its EIP-3009 authorization will be rejected at fund() time. The field order that matters is the one below, and it is frozen.",
+  "type": "object",
+  "required": [
+    "termsHash",
+    "buyerAgent",
+    "sellerAgent",
+    "sellerPayout",
+    "arbiter",
+    "amount",
+    "fundingDeadline",
+    "deliveryWindow",
+    "deliveryConfirmationWindow",
+    "appealResponseWindow",
+    "arbitrationWindow"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "termsHash": {
+      "type": "string",
+      "pattern": "^(sha256:|0x)[0-9a-fA-F]{64}$",
+      "description": "The accepted contract's content anchor — the same 32-byte digest the coordination layer carries, in either of two accepted spellings. `sha256:<hex>` is what the coordination layer uses and what a Runtime normally emits here; `0x<hex>` is the settlement layer's spelling. A consumer MUST accept both and compare digest-to-digest after stripping the prefix, because the prefix is not part of the ABI encoding: only the 32 bytes are hashed into the deal id."
+    },
+    "buyer": {
+      "allOf": [{ "$ref": "#/$defs/evmAddress" }],
+      "description": "The buyer's WALLET address — the account the EIP-3009 authorization moves funds from, not the buyer agent's DID or runtime key.\n\nOPTIONAL here, and its absence is a normal stage rather than an error: the Runtime assembles the Activation before it knows the wallet, and this member is filled from the buyer's own funding submission (§6.2.1 role binding — only the buyer may set it). A `funding` read before that submission returns the Activation without it. Both parties MUST therefore treat an Activation lacking `buyer` as NOT YET SIGNABLE: the deal id derives from the completed struct, so signing a partial one produces a signature against a deal id that will never exist on chain."
+    },
+    "buyerAgent": {
+      "$ref": "#/$defs/evmAddress",
+      "description": "The buyer agent's runtime key as an EVM address (§8). The vault verifies party signatures against these addresses, so they are addresses here rather than DIDs."
+    },
+    "sellerAgent": { "$ref": "#/$defs/evmAddress" },
+    "sellerPayout": {
+      "$ref": "#/$defs/evmAddress",
+      "description": "Where a successful settlement pays. Taken from the contract's escrow.payoutAddress: a deal cannot be proposed without one, because the engine cannot settle fixed_outcome without a destination."
+    },
+    "arbiter": {
+      "$ref": "#/$defs/evmAddress",
+      "description": "The contract-named arbiter's address. The only signer the vault accepts for a resolution."
+    },
+    "amount": {
+      "type": "string",
+      "pattern": "^[0-9]+$",
+      "description": "The escrowed amount in the asset's base units, as a DECIMAL STRING. It is a string because a uint256 does not survive JSON's number type — a client that parses it into a float loses precision and derives a different deal id. v1 settles USDC only, so these are 6-decimal base units."
+    },
+    "fundingDeadline": {
+      "$ref": "#/$defs/unixSeconds",
+      "description": "Absolute deadline for funding to confirm on chain. Passing it moves COMMITTED to EXPIRED (§3.1)."
+    },
+    "deliveryWindow": { "$ref": "#/$defs/durationSeconds" },
+    "deliveryConfirmationWindow": {
+      "$ref": "#/$defs/durationSeconds",
+      "description": "How long the buyer has to accept or reject after delivery. On expiry the deal auto-confirms to ACCEPTED — silence is acceptance, which is why this value is inside the signed struct rather than a Runtime policy knob."
+    },
+    "appealResponseWindow": { "$ref": "#/$defs/durationSeconds" },
+    "arbitrationWindow": {
+      "$ref": "#/$defs/durationSeconds",
+      "description": "How long the arbiter has after an appeal. On expiry anyone may refund the buyer — the exit that keeps DISPUTED from being a state with no way out when an arbiter loses its key, since the vault has no owner and no sweep."
+    }
+  },
+  "$defs": {
+    "evmAddress": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{40}$"
+    },
+    "unixSeconds": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "An absolute instant, Unix seconds."
+    },
+    "durationSeconds": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "A duration in seconds, relative to the window's own start — not an absolute time."
+    }
+  }
+}

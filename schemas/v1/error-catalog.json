@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://a2a.gokite.ai/schemas/agreement-error-catalog/v1",
   "title": "Agreement error catalog",
-  "description": "DRAFT — normative error codes a conforming Runtime returns, with retry semantics. retriable=false means retrying the identical request cannot succeed; fix the input or the state first.",
+  "description": "The normative error codes a conforming Runtime returns, with their retry semantics. retriable=false means retrying the identical request cannot succeed; fix the input or the state first. This file is the catalog; the wire shape that carries a code is AgreementDomainError (domain-error.schema.json), returned in JSON-RPC error.data under code -32010 (spec §7).",
   "type": "object",
   "errors": [
     { "code": "invalid_command_schema", "retriable": false, "description": "Command failed JSON Schema validation for its declared schema/version." },
@@ -16,9 +16,9 @@
     { "code": "revision_conflict", "retriable": true, "description": "expectedRevision is stale; refetch state and resubmit with the current revision." },
     { "code": "idempotency_conflict", "retriable": false, "description": "commandId reused with different immutable bytes; rejected and audited." },
     { "code": "illegal_transition", "retriable": false, "description": "commandType is not legal from the deal's current state under the pinned template." },
-    { "code": "deadline_exceeded", "retriable": false, "description": "The relevant platform window has elapsed; the deadline edge governs." },
+    { "code": "deadline_exceeded", "retriable": false, "description": "The relevant platform window has elapsed; the deadline edge governs. RESERVED in this release: no Runtime emits it yet — the deadline refusal edge is not implemented; the code is pinned here so clients can branch on it when it ships." },
     { "code": "evidence_not_validated", "retriable": false, "description": "Referenced evidence manifest is missing or failed intake validation." },
-    { "code": "funding_not_final", "retriable": true, "description": "Funding not yet at chain finality; broadcast is not finality." },
+    { "code": "funding_not_final", "retriable": true, "description": "Funding not yet at chain finality; broadcast is not finality. RESERVED in this release: no Runtime emits it yet — the engine does not name the code; the mapping on the Passport side is in place and activates the moment it does." },
     { "code": "rate_limited", "retriable": true, "description": "Too many requests; honor Retry-After." },
     { "code": "internal_error", "retriable": true, "description": "Transient Runtime failure; safe to retry idempotently with the same commandId." }
   ]

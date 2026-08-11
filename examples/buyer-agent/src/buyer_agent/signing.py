@@ -149,15 +149,27 @@ def terms_preimage(terms_hash_ref: str) -> bytes:
     return TERMS_DOMAIN_TAG + terms_hash_ref.encode()
 
 
-def sign_terms(terms_hash_ref: str, priv: PrivateKey, signer_agent_id: str) -> dict[str, Any]:
+def sign_terms(
+    terms_hash_ref: str, priv: PrivateKey, signer_agent_id: str,
+    agreement_sig: str | None = None,
+) -> dict[str, Any]:
     """One DealContract signature entry (§4.1): the first entry is the
-    proposal, a second over the IDENTICAL hash is the acceptance."""
-    return {
+    proposal, a second over the IDENTICAL hash is the acceptance.
+
+    `agreement_sig` is the party's EIP-712 Agreement co-signature (settlement
+    layer, spec §4.4). It is two-phase BY CONSTRUCTION: the Agreement struct
+    commits to the dealId the Runtime assigns on proposal, so the proposal
+    entry MUST omit it (pass None), and the acceptance must carry it on both
+    entries. A different digest from the formation signature made here."""
+    entry = {
         "signerAgentId": signer_agent_id,
         "profile": SIGNATURE_PROFILE,
         "keyId": key_id(signer_agent_id, priv),
         "sig": sign_digest(priv, terms_preimage(terms_hash_ref)),
     }
+    if agreement_sig is not None:
+        entry["agreementSig"] = agreement_sig
+    return entry
 
 
 def verify_terms_signature(terms_hash_ref: str, entry: dict[str, Any], signer_address: str) -> bool:
@@ -223,7 +235,12 @@ def sign_party_envelope(
 ) -> dict[str, Any]:
     """§6.2.1 — the signed wrapper the funding / evidence / proofs interactions
     require. Those are party-only: the Runtime rejects a request whose
-    signature does not verify, or whose actor is not a party to the deal."""
+    signature does not verify, or whose actor is not a party to the deal.
+
+    The caller MUST include the interaction `kind` in `envelope`: the Runtime
+    canonicalizes the entire wire payload (only `signature` excluded), so the
+    signed bytes must cover `kind` too — omitting it makes the signature
+    recover the wrong address."""
     unsigned = {k: v for k, v in envelope.items() if k != "signature"}
     return {
         **unsigned,

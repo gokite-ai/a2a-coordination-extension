@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": false,
+  "wireMatchesCatalog": true,
+  "note": "The delivered command cited an evidenceId the Runtime never issued, or one whose intake validation failed — the check that stops a locally computed digest from passing as evidence."
+}

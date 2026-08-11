@@ -1,0 +1,14 @@
+{
+  "schemaValid": true,
+  "orderedBySequence": [
+    1,
+    2,
+    3
+  ],
+  "receiptHashForNextCommand": "sha256:8ae351664f9cf62690a485ef6dba49fde05c1c36bb2ae7e7c2009c854329d119",
+  "chainLinked": true,
+  "proofHashesRecomputable": true,
+  "signaturesVerify": true,
+  "signedBy": "0x5cbdd86a2fa8dc4bddd8a8f69dba48572eec07fb",
+  "note": "Mirrors the Kite Runtime's real chain. The first link is PROPOSED -> COMMITTED, so it carries fromState and a previousStateHash over (PROPOSED, sequence 0); only previousProofHash is absent. A link carries commandId AND commandHash — the id says which command was meant, the hash says which bytes were committed — exactly when an AgreementCommand drove it, and the hash is the sha256 of that published command's canonical form. Both the runtime-driven FUND_CONFIRMED link and the CONTRACT_SIGNED link carry neither: CONTRACT_SIGNED comes from the `acceptance` interaction, which is not a command (§5). Hashes and signatures are real."
+}

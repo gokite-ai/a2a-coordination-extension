@@ -1,0 +1,5 @@
+{
+  "code": "rate_limited",
+  "retriable": true,
+  "retryAfterSeconds": 30
+}

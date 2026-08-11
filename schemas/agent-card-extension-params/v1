@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://a2a.gokite.ai/schemas/agent-card-extension-params/v1",
+  "title": "Agent Card extension params",
+  "description": "The `params` object of this Extension's entry in a Runtime's A2A Agent Card `capabilities.extensions` (§2.2).\n\nThese are the execution-context facts a party needs BEFORE it signs anything, which is why they belong on the card rather than in a first interaction: `chainId` and `escrowVault` fix the EIP-712 domain every settlement signature is made under, and a party that learns them after signing has already signed against the wrong domain. The card is also what `runtimeBinding.agentCardHash` pins (§4.1), so these values are covered by that hash — a Runtime that changes its chain context changes its card hash and every contract pinned to the old one stops being executable, which is the intended behaviour rather than a hazard.",
+  "type": "object",
+  "required": [
+    "commandMediaType",
+    "templates",
+    "signatureProfiles",
+    "chainId",
+    "escrowVault"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "commandMediaType": {
+      "const": "application/vnd.gokite.agreement-command+json;version=1",
+      "description": "The media type a request's `raw` Part must declare for the Runtime to read it as an Extension interaction. A Part with no media type, or a foreign one, is never read as one."
+    },
+    "templates": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      },
+      "description": "The settlement templates this Runtime executes. v1 defines fixed_outcome/v1; a contract naming a template absent from this list MUST be refused rather than executed under a substitute.",
+      "examples": [
+        [
+          "fixed_outcome/v1"
+        ]
+      ]
+    },
+    "signatureProfiles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string"
+      },
+      "description": "The signature profiles this Runtime verifies.",
+      "examples": [
+        [
+          "secp256k1-keccak-v1"
+        ]
+      ]
+    },
+    "chainId": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "The settlement chain. REQUIRED: spec §2.2 makes the chain context a MUST on a Runtime card, because every §4.4 signature needs it and the first one (agreementSig) is due at acceptance, before any funding context exists. A card without it advertises a Runtime no party can safely form an agreement with."
+    },
+    "escrowVault": {
+      "type": "string",
+      "pattern": "^0x[0-9a-fA-F]{40}$",
+      "description": "The EscrowVault address — the EIP-712 verifying contract. Present exactly when chainId is: the two are one fact, and half of it is not usable."
+    }
+  },
+  "dependentRequired": {
+    "chainId": [
+      "escrowVault"
+    ],
+    "escrowVault": [
+      "chainId"
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "schema": "https://a2a.gokite.ai/schemas/agreement-command/v1",
+  "commandId": "cmd_emptyaccepted",
+  "commandType": "kite.contract.accepted",
+  "dealId": "deal_0123456789ab",
+  "expectedRevision": 4,
+  "actorAgentId": "did:kite:acme:buyer-17",
+  "termsHash": "sha256:feba188b56c1e0deba060f0284f9e26772f20802a8e95578a3a52d028e6308d4",
+  "payload": {},
+  "payloadHash": "sha256:44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+  "occurredAt": "2026-08-07T09:30:00Z",
+  "signature": {
+    "profile": "secp256k1-keccak-v1",
+    "keyId": "did:kite:acme:buyer-17#jkt:6a5da2aa30d9780a",
+    "sig": "0x08f3ad34ca497ed6b07c0c93aed1af21941b9941f4cd1b67d59588e747beddd92987309db2daa990dbc4c31f465061bea31c2d8f6902f5615b10ca37052bf9f71c"
+  }
+}

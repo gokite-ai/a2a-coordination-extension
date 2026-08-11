@@ -1,0 +1,59 @@
+{
+  "proofs": [
+    {
+      "proofId": "prf_1",
+      "agreementId": "agr_e2e",
+      "sequence": 1,
+      "event": "CONTRACT_SIGNED",
+      "fromState": "PROPOSED",
+      "toState": "COMMITTED",
+      "previousStateHash": "sha256:12fe0a2829210a0f8d5c23e183586372d06eb3e5c9f06ac43669f0afe17de766",
+      "nextStateHash": "sha256:ef146b2309272bcce86f2cc51adcdf765281b1b42764c780279bff970ca393e1",
+      "proofHash": "sha256:2aa8ff0b80b940cc89cad1ec0732d734510a2b7337a1496f6280898cb89726a4",
+      "actorId": "did:kite:ind:buyer",
+      "signedBy": "0x5cbdd86a2fa8dc4bddd8a8f69dba48572eec07fb",
+      "signature": "0x33c89f98d0db7a86a8368b00a29caddd940ab27cc717c82726bd77c50c7c3a307ba19b34a01bc939d8f620e4de9adc8a7b1b300b5e353907ce1af88d4ade52bc1b",
+      "createdAt": "2026-08-09T07:01:00Z"
+    },
+    {
+      "proofId": "prf_2",
+      "agreementId": "agr_e2e",
+      "sequence": 2,
+      "event": "FUND_CONFIRMED",
+      "fromState": "COMMITTED",
+      "toState": "FULFILLING",
+      "previousStateHash": "sha256:ef146b2309272bcce86f2cc51adcdf765281b1b42764c780279bff970ca393e1",
+      "nextStateHash": "sha256:69b0778581b6c033e8d06c66664e743423e54759453168e8230a6adfc14a0eda",
+      "previousProofHash": "sha256:2aa8ff0b80b940cc89cad1ec0732d734510a2b7337a1496f6280898cb89726a4",
+      "proofHash": "sha256:8916feb8aa0a6a1c1c33de80dafe1e9ff0372bdb8049d5ba8e90e4299de08eb6",
+      "actorId": "runtime",
+      "metadata": {
+        "fundingTx": "0xfefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefefe"
+      },
+      "signedBy": "0x5cbdd86a2fa8dc4bddd8a8f69dba48572eec07fb",
+      "signature": "0x93dc2a31cc4f1d747b0ce072fc183de0e9e9ce5aa50296005be2f2462cceb8f17d3287d7bccc0ca7b11fd334f3eea8b9c0abda7c35f13f7dd966bcf2319f4d791b",
+      "createdAt": "2026-08-09T07:02:00Z"
+    },
+    {
+      "proofId": "prf_3",
+      "agreementId": "agr_e2e",
+      "sequence": 3,
+      "event": "DELIVERED",
+      "fromState": "FULFILLING",
+      "toState": "DELIVERED",
+      "previousStateHash": "sha256:69b0778581b6c033e8d06c66664e743423e54759453168e8230a6adfc14a0eda",
+      "nextStateHash": "sha256:aee5635d8eb5664b168b5a05df0d5f26e3ad1a5afb372bdbed8dac5f189788e7",
+      "previousProofHash": "sha256:8916feb8aa0a6a1c1c33de80dafe1e9ff0372bdb8049d5ba8e90e4299de08eb6",
+      "proofHash": "sha256:8ae351664f9cf62690a485ef6dba49fde05c1c36bb2ae7e7c2009c854329d119",
+      "actorId": "did:kite:ind:seller",
+      "commandId": "cmd_delivered",
+      "commandHash": "sha256:f11aa70e5865b498f6d0c0998a81241a4715a246e779f78f79a35c4d2563964c",
+      "evidenceRefs": [
+        "ev_1"
+      ],
+      "signedBy": "0x5cbdd86a2fa8dc4bddd8a8f69dba48572eec07fb",
+      "signature": "0xa4733eede1f49d7ecf681086b977c5dea097403d1de755c41724d525322a0c1314bdf335eb5c19789581c19f1983fa50a8b5842a38b8f58399679f6bffa95bc81c",
+      "createdAt": "2026-08-09T07:03:00Z"
+    }
+  ]
+}

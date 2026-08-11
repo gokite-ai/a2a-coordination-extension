@@ -1,7 +1,7 @@
 {
   "member": "payloadHash",
-  "canonical": "{\"actorAgentId\":\"did:kite:haiku:seller-3\",\"commandId\":\"cmd_01\",\"commandType\":\"kite.contract.delivered\",\"dealId\":\"deal_0123456789ab\",\"expectedRevision\":3,\"occurredAt\":\"2026-08-07T09:30:00Z\",\"payload\":{\"evidenceRef\":\"ev_7f3a\",\"expiry\":1800000000,\"sellerDeliverySig\":\"0xcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd\"},\"payloadHash\":\"sha256:0a54cfc43106fa95e629afe7a086da9aa5a534eaa2a50f64a753c0f8c3c85680\",\"schema\":\"https://a2a.gokite.ai/schemas/agreement-command/v1\",\"termsHash\":\"sha256:feba188b56c1e0deba060f0284f9e26772f20802a8e95578a3a52d028e6308d4\"}",
-  "hash": "sha256:54275c2a6106c5bfc3a4c2590ab29032fe753ebbfa9729b8a25eb42c2016c646",
-  "commandPayloadHash": "sha256:0a54cfc43106fa95e629afe7a086da9aa5a534eaa2a50f64a753c0f8c3c85680",
+  "canonical": "{\"actorAgentId\":\"did:kite:haiku:seller-3\",\"commandId\":\"cmd_01\",\"commandType\":\"kite.contract.delivered\",\"dealId\":\"deal_0123456789ab\",\"expectedRevision\":3,\"occurredAt\":\"2026-08-07T09:30:00Z\",\"payload\":{\"deliveryHash\":\"sha256:9fe568c663bcffcef883d7bb9b1128e32b431bf32d9b2e4929005133897b16ad\",\"evidenceId\":\"ev_7f3a\",\"expiry\":1800000000,\"sellerDeliverySig\":\"0xcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcdcd\"},\"payloadHash\":\"sha256:2d4df4919d449b638b70cc408f69ad6e7aec7401607e618b255dbf5f764561cc\",\"schema\":\"https://a2a.gokite.ai/schemas/agreement-command/v1\",\"termsHash\":\"sha256:feba188b56c1e0deba060f0284f9e26772f20802a8e95578a3a52d028e6308d4\"}",
+  "hash": "sha256:3537dcd132359bfeadf2b1ea87c5e4e426f30c60c3d35ab941ca1bd4f6f1ee90",
+  "commandPayloadHash": "sha256:2d4df4919d449b638b70cc408f69ad6e7aec7401607e618b255dbf5f764561cc",
   "note": "the command's own payloadHash member covers `payload` alone; `hash` here covers the whole signed body"
 }

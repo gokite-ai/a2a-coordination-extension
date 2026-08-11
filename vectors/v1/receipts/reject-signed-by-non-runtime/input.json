@@ -3,7 +3,7 @@
   "receiptId": "atr_01",
   "dealId": "deal_0123456789ab",
   "commandId": "cmd_01",
-  "commandHash": "sha256:54275c2a6106c5bfc3a4c2590ab29032fe753ebbfa9729b8a25eb42c2016c646",
+  "commandHash": "sha256:3537dcd132359bfeadf2b1ea87c5e4e426f30c60c3d35ab941ca1bd4f6f1ee90",
   "fromState": "FULFILLING",
   "toState": "DELIVERED",
   "revision": 4,
@@ -11,6 +11,6 @@
   "auditStatus": "pending",
   "runtimeSignature": {
     "keyId": "did:kite:kite:coordination-engine#jkt:8c350cb27b3388df",
-    "sig": "0x7d21d8102c8d1140a386d261cf221f0399713a83e5804e97a962e354008d2d147026e020172fb9085189040a4d571fe9ba8c5bc1d0a7d7592d17375be6bad5e81b"
+    "sig": "0xcf13f3a84fbcaed793fb4418a40bb4e26fab336e0c12bc71a1b47ff4b702f07375cdefd7eb0f11637ede46ca9778f26b09346bee7c03c986cc6b5072b54161a11c"
   }
 }

@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": false,
+  "wireMatchesCatalog": true,
+  "note": "The Runtime recomputed payloadHash from the payload's canonical bytes and got something else — the check that runs before the signature, so a swapped payload is named as such rather than as a bad signature (§4.2)."
+}
