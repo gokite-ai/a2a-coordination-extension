@@ -9,6 +9,7 @@
     { "$ref": "#/$defs/agreementFunding" },
     { "$ref": "#/$defs/agreementFundingAccepted" },
     { "$ref": "#/$defs/agreementEvidenceRecorded" },
+    { "$ref": "#/$defs/agreementEvidence" },
     { "$ref": "#/$defs/agreementProofs" }
   ],
   "$defs": {
@@ -69,6 +70,37 @@
       "properties": {
         "kind": { "const": "agreement-evidence-recorded" },
         "evidenceId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "agreementEvidence": {
+      "title": "agreement-evidence",
+      "description": "The answer to an `evidence-list` read. It resolves proof evidence ids to the artifact URL, content hash and verification metadata registered for the agreement.",
+      "type": "object",
+      "required": ["kind", "evidence"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "const": "agreement-evidence" },
+        "evidence": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["evidenceId", "agreementId", "type", "hash", "url"],
+            "additionalProperties": false,
+            "properties": {
+              "evidenceId": { "type": "string", "minLength": 1 },
+              "agreementId": { "type": "string", "minLength": 1 },
+              "type": { "type": "string", "minLength": 1 },
+              "hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+              "url": { "type": "string", "format": "uri" },
+              "source": { "type": "string" },
+              "format": { "type": "string" },
+              "sizeBytes": { "type": "integer", "minimum": 0 },
+              "sections": { "type": "array", "items": { "type": "string" } },
+              "metadata": { "type": "object", "additionalProperties": { "type": "string" } },
+              "createdAt": { "type": "string", "format": "date-time" }
+            }
+          }
+        }
       }
     },
     "agreementProofs": {

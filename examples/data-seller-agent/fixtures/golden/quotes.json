@@ -1,0 +1,723 @@
+{
+  "fixtureVersion": "v1",
+  "quotes": {
+    "e2e-slice": {
+      "query": {
+        "columns": [
+          "DIABETES",
+          "BPHIGH"
+        ],
+        "states": [
+          "CA"
+        ],
+        "minPopulation": 2000,
+        "thresholds": {
+          "DIABETES": {
+            "min": 8
+          }
+        }
+      },
+      "facts": {
+        "accepted": true,
+        "units": 7917,
+        "deliverableRowCount": 197925,
+        "statsHash": "sha256:b54265595eebb173197249e2d8bc57ccf97842eb52d33880aca89c60d8c446b1",
+        "summary": "I can provide a 197,925-row synthetic dataset over 7,917 tracts — every tract represented. List price $260.83.",
+        "body": {
+          "accepted": true,
+          "rejections": [],
+          "tractCount": 7917,
+          "priceable": true,
+          "price": {
+            "tractCount": 7917,
+            "breakdownCents": {
+              "base": 500,
+              "tracts": 1583,
+              "standardColumns": 0,
+              "premiumColumns": 24000,
+              "subtotal": 26083
+            },
+            "listCents": 26083,
+            "listAmountMinor": "260830000",
+            "listAmountDisplay": "$260.83"
+          },
+          "zeroYieldStates": [],
+          "sample": [
+            {
+              "StateAbbr": "CA",
+              "StateDesc": "California",
+              "CountyName": "Alameda",
+              "CountyFIPS": "06001",
+              "TractFIPS": "06001400100",
+              "TotalPopulation": 3038,
+              "TotalPop18plus": 2633,
+              "DIABETES_CrudePrev": 9.8,
+              "BPHIGH_CrudePrev": 31.7
+            },
+            {
+              "StateAbbr": "CA",
+              "StateDesc": "California",
+              "CountyName": "Alameda",
+              "CountyFIPS": "06001",
+              "TractFIPS": "06001400700",
+              "TotalPopulation": 4508,
+              "TotalPop18plus": 3866,
+              "DIABETES_CrudePrev": 8.7,
+              "BPHIGH_CrudePrev": 26.6
+            },
+            {
+              "StateAbbr": "CA",
+              "StateDesc": "California",
+              "CountyName": "Alameda",
+              "CountyFIPS": "06001",
+              "TractFIPS": "06001400800",
+              "TotalPopulation": 3917,
+              "TotalPop18plus": 3332,
+              "DIABETES_CrudePrev": 8.9,
+              "BPHIGH_CrudePrev": 26.8
+            },
+            {
+              "StateAbbr": "CA",
+              "StateDesc": "California",
+              "CountyName": "Alameda",
+              "CountyFIPS": "06001",
+              "TractFIPS": "06001400900",
+              "TotalPopulation": 2514,
+              "TotalPop18plus": 2121,
+              "DIABETES_CrudePrev": 8.5,
+              "BPHIGH_CrudePrev": 25.8
+            },
+            {
+              "StateAbbr": "CA",
+              "StateDesc": "California",
+              "CountyName": "Alameda",
+              "CountyFIPS": "06001",
+              "TractFIPS": "06001401000",
+              "TotalPopulation": 6097,
+              "TotalPop18plus": 5198,
+              "DIABETES_CrudePrev": 8.3,
+              "BPHIGH_CrudePrev": 25.4
+            }
+          ],
+          "stats": {
+            "tractCount": 7917,
+            "totalPopulation": 35821434,
+            "totalPop18plus": 27704732,
+            "perMeasure": {
+              "DIABETES": {
+                "min": 8,
+                "max": 34.4,
+                "mean": 12.0428,
+                "median": 11.7,
+                "n": 7917
+              },
+              "BPHIGH": {
+                "min": 20.7,
+                "max": 60.7,
+                "mean": 30.8848,
+                "median": 30.3,
+                "n": 7917
+              }
+            }
+          },
+          "deliverable": {
+            "unit": "synthetic person, one row each",
+            "rowsPerTract": 25,
+            "rowCount": 197925,
+            "tractCount": 7917,
+            "everyTractRepresented": true,
+            "perTractStandardErrorPp": {
+              "DIABETES": 6.51,
+              "BPHIGH": 9.24
+            },
+            "perTractRatesSupported": false,
+            "note": "Every one of the 7,917 matched tracts gets 25 row(s). One tract's rate at that density carries the standard error above, so this file is for person-level work over the slice — not for ranking individual tracts. For a tract's own rate, read the published CDC PLACES value: it is this file's input and it is free."
+          },
+          "note": "Free and non-committal. A signed, committed quote comes from the agent door."
+        }
+      }
+    },
+    "two-counties-four-columns": {
+      "query": {
+        "columns": [
+          "DIABETES",
+          "BPHIGH",
+          "OBESITY",
+          "ACCESS2"
+        ],
+        "states": [
+          "CA"
+        ],
+        "counties": [
+          "Alameda",
+          "San Francisco"
+        ]
+      },
+      "facts": {
+        "accepted": true,
+        "units": 617,
+        "deliverableRowCount": 15425,
+        "statsHash": "sha256:e96252cdc27bcff9fa7fb537a019b89d9d06fa4440364d65a8f0f75068e52799",
+        "summary": "I can provide a 15,425-row synthetic dataset over 617 tracts — every tract represented. List price $346.23.",
+        "body": {
+          "accepted": true,
+          "rejections": [],
+          "tractCount": 617,
+          "priceable": true,
+          "price": {
+            "tractCount": 617,
+            "breakdownCents": {
+              "base": 500,
+              "tracts": 123,
+              "standardColumns": 10000,
+              "premiumColumns": 24000,
+              "subtotal": 34623
+            },
+            "listCents": 34623,
+            "listAmountMinor": "346230000",
+            "listAmountDisplay": "$346.23"
+          },
+          "zeroYieldStates": [],
+          "sample": [
+            {
+              "StateAbbr": "CA",
+              "StateDesc": "California",
+              "CountyName": "Alameda",
+              "CountyFIPS": "06001",
+              "TractFIPS": "06001400100",
+              "TotalPopulation": 3038,
+              "TotalPop18plus": 2633,
+              "DIABETES_CrudePrev": 9.8,
+              "BPHIGH_CrudePrev": 31.7,
+              "OBESITY_CrudePrev": 20.5,
+              "ACCESS2_CrudePrev": 2.6
+            },
+            {
+              "StateAbbr": "CA",
+              "StateDesc": "California",
+              "CountyName": "Alameda",
+              "CountyFIPS": "06001",
+              "TractFIPS": "06001400200",
+              "TotalPopulation": 2001,
+              "TotalPop18plus": 1652,
+              "DIABETES_CrudePrev": 7.9,
+              "BPHIGH_CrudePrev": 27.1,
+              "OBESITY_CrudePrev": 21.7,
+              "ACCESS2_CrudePrev": 3.6
+            },
+            {
+              "StateAbbr": "CA",
+              "StateDesc": "California",
+              "CountyName": "Alameda",
+              "CountyFIPS": "06001",
+              "TractFIPS": "06001400300",
+              "TotalPopulation": 5504,
+              "TotalPop18plus": 4654,
+              "DIABETES_CrudePrev": 7.8,
+              "BPHIGH_CrudePrev": 26.3,
+              "OBESITY_CrudePrev": 22.8,
+              "ACCESS2_CrudePrev": 3.8
+            },
+            {
+              "StateAbbr": "CA",
+              "StateDesc": "California",
+              "CountyName": "Alameda",
+              "CountyFIPS": "06001",
+              "TractFIPS": "06001400400",
+              "TotalPopulation": 4112,
+              "TotalPop18plus": 3421,
+              "DIABETES_CrudePrev": 6.9,
+              "BPHIGH_CrudePrev": 23.8,
+              "OBESITY_CrudePrev": 23,
+              "ACCESS2_CrudePrev": 3.8
+            },
+            {
+              "StateAbbr": "CA",
+              "StateDesc": "California",
+              "CountyName": "Alameda",
+              "CountyFIPS": "06001",
+              "TractFIPS": "06001400500",
+              "TotalPopulation": 3644,
+              "TotalPop18plus": 3087,
+              "DIABETES_CrudePrev": 7.8,
+              "BPHIGH_CrudePrev": 25.1,
+              "OBESITY_CrudePrev": 25.5,
+              "ACCESS2_CrudePrev": 4.8
+            }
+          ],
+          "stats": {
+            "tractCount": 617,
+            "totalPopulation": 2556264,
+            "totalPop18plus": 2099082,
+            "perMeasure": {
+              "DIABETES": {
+                "min": 2.9,
+                "max": 50.8,
+                "mean": 10.2413,
+                "median": 9.8,
+                "n": 617
+              },
+              "BPHIGH": {
+                "min": 12,
+                "max": 71.8,
+                "mean": 26.9355,
+                "median": 27,
+                "n": 617
+              },
+              "OBESITY": {
+                "min": 12.6,
+                "max": 39.6,
+                "mean": 21.1378,
+                "median": 20.3,
+                "n": 617
+              },
+              "ACCESS2": {
+                "min": 2.3,
+                "max": 24.3,
+                "mean": 7.2554,
+                "median": 5.8,
+                "n": 617
+              }
+            }
+          },
+          "deliverable": {
+            "unit": "synthetic person, one row each",
+            "rowsPerTract": 25,
+            "rowCount": 15425,
+            "tractCount": 617,
+            "everyTractRepresented": true,
+            "perTractStandardErrorPp": {
+              "DIABETES": 6.06,
+              "BPHIGH": 8.87,
+              "OBESITY": 8.17,
+              "ACCESS2": 5.19
+            },
+            "perTractRatesSupported": false,
+            "note": "Every one of the 617 matched tracts gets 25 row(s). One tract's rate at that density carries the standard error above, so this file is for person-level work over the slice — not for ranking individual tracts. For a tract's own rate, read the published CDC PLACES value: it is this file's input and it is free."
+          },
+          "note": "Free and non-committal. A signed, committed quote comes from the agent door."
+        }
+      }
+    },
+    "ny-standard-only": {
+      "query": {
+        "columns": [
+          "OBESITY",
+          "CSMOKING",
+          "ACCESS2",
+          "SLEEP"
+        ],
+        "states": [
+          "NY"
+        ]
+      },
+      "facts": {
+        "accepted": true,
+        "units": 5289,
+        "deliverableRowCount": 132225,
+        "statsHash": "sha256:ec2dac8ecc76ebfe31791b4a0bb7e7d17944873675fce38b0c110ed37d7a105a",
+        "summary": "I can provide a 132,225-row synthetic dataset over 5,289 tracts — every tract represented. List price $215.58.",
+        "body": {
+          "accepted": true,
+          "rejections": [],
+          "tractCount": 5289,
+          "priceable": true,
+          "price": {
+            "tractCount": 5289,
+            "breakdownCents": {
+              "base": 500,
+              "tracts": 1058,
+              "standardColumns": 20000,
+              "premiumColumns": 0,
+              "subtotal": 21558
+            },
+            "listCents": 21558,
+            "listAmountMinor": "215580000",
+            "listAmountDisplay": "$215.58"
+          },
+          "zeroYieldStates": [],
+          "sample": [
+            {
+              "StateAbbr": "NY",
+              "StateDesc": "New York",
+              "CountyName": "Albany",
+              "CountyFIPS": "36001",
+              "TractFIPS": "36001000100",
+              "TotalPopulation": 2073,
+              "TotalPop18plus": 1507,
+              "OBESITY_CrudePrev": 44.4,
+              "CSMOKING_CrudePrev": 21.2,
+              "ACCESS2_CrudePrev": 11.9,
+              "SLEEP_CrudePrev": 48.2
+            },
+            {
+              "StateAbbr": "NY",
+              "StateDesc": "New York",
+              "CountyName": "Albany",
+              "CountyFIPS": "36001",
+              "TractFIPS": "36001000201",
+              "TotalPopulation": 3125,
+              "TotalPop18plus": 2314,
+              "OBESITY_CrudePrev": 44.6,
+              "CSMOKING_CrudePrev": 20.6,
+              "ACCESS2_CrudePrev": 11.2,
+              "SLEEP_CrudePrev": 46.2
+            },
+            {
+              "StateAbbr": "NY",
+              "StateDesc": "New York",
+              "CountyName": "Albany",
+              "CountyFIPS": "36001",
+              "TractFIPS": "36001000202",
+              "TotalPopulation": 2598,
+              "TotalPop18plus": 1756,
+              "OBESITY_CrudePrev": 45.1,
+              "CSMOKING_CrudePrev": 18.5,
+              "ACCESS2_CrudePrev": 10.7,
+              "SLEEP_CrudePrev": 49.8
+            },
+            {
+              "StateAbbr": "NY",
+              "StateDesc": "New York",
+              "CountyName": "Albany",
+              "CountyFIPS": "36001",
+              "TractFIPS": "36001000301",
+              "TotalPopulation": 3190,
+              "TotalPop18plus": 2189,
+              "OBESITY_CrudePrev": 41.6,
+              "CSMOKING_CrudePrev": 16.5,
+              "ACCESS2_CrudePrev": 9.8,
+              "SLEEP_CrudePrev": 48.1
+            },
+            {
+              "StateAbbr": "NY",
+              "StateDesc": "New York",
+              "CountyName": "Albany",
+              "CountyFIPS": "36001",
+              "TractFIPS": "36001000302",
+              "TotalPopulation": 3496,
+              "TotalPop18plus": 2956,
+              "OBESITY_CrudePrev": 29.4,
+              "CSMOKING_CrudePrev": 9.6,
+              "ACCESS2_CrudePrev": 6,
+              "SLEEP_CrudePrev": 37.3
+            }
+          ],
+          "stats": {
+            "tractCount": 5289,
+            "totalPopulation": 20200351,
+            "totalPop18plus": 16087481,
+            "perMeasure": {
+              "OBESITY": {
+                "min": 11.6,
+                "max": 60.8,
+                "mean": 29.455,
+                "median": 29.5,
+                "n": 5289
+              },
+              "CSMOKING": {
+                "min": 3.3,
+                "max": 49.4,
+                "mean": 12.0936,
+                "median": 11.3,
+                "n": 5289
+              },
+              "ACCESS2": {
+                "min": 2.1,
+                "max": 34.2,
+                "mean": 8.4138,
+                "median": 6.7,
+                "n": 5289
+              },
+              "SLEEP": {
+                "min": 23.7,
+                "max": 57.5,
+                "mean": 38.7023,
+                "median": 38.1,
+                "n": 5289
+              }
+            }
+          },
+          "deliverable": {
+            "unit": "synthetic person, one row each",
+            "rowsPerTract": 25,
+            "rowCount": 132225,
+            "tractCount": 5289,
+            "everyTractRepresented": true,
+            "perTractStandardErrorPp": {
+              "OBESITY": 9.12,
+              "CSMOKING": 6.52,
+              "ACCESS2": 5.55,
+              "SLEEP": 9.74
+            },
+            "perTractRatesSupported": false,
+            "note": "Every one of the 5,289 matched tracts gets 25 row(s). One tract's rate at that density carries the standard error above, so this file is for person-level work over the slice — not for ranking individual tracts. For a tract's own rate, read the published CDC PLACES value: it is this file's input and it is free."
+          },
+          "note": "Free and non-committal. A signed, committed quote comes from the agent door."
+        }
+      }
+    },
+    "density-asked-3": {
+      "query": {
+        "columns": [
+          "SLEEP"
+        ],
+        "states": [
+          "NY"
+        ],
+        "rowsPerTract": 3
+      },
+      "facts": {
+        "accepted": true,
+        "units": 5289,
+        "deliverableRowCount": 15867,
+        "statsHash": "sha256:bea2f8021974cf3c0f873a51798baf0e6037515e4beb899d796b6e3a0359516a",
+        "summary": "I can provide a 15,867-row synthetic dataset over 5,289 tracts — every tract represented. List price $65.58.",
+        "body": {
+          "accepted": true,
+          "rejections": [],
+          "tractCount": 5289,
+          "priceable": true,
+          "price": {
+            "tractCount": 5289,
+            "breakdownCents": {
+              "base": 500,
+              "tracts": 1058,
+              "standardColumns": 5000,
+              "premiumColumns": 0,
+              "subtotal": 6558
+            },
+            "listCents": 6558,
+            "listAmountMinor": "65580000",
+            "listAmountDisplay": "$65.58"
+          },
+          "zeroYieldStates": [],
+          "sample": [
+            {
+              "StateAbbr": "NY",
+              "StateDesc": "New York",
+              "CountyName": "Albany",
+              "CountyFIPS": "36001",
+              "TractFIPS": "36001000100",
+              "TotalPopulation": 2073,
+              "TotalPop18plus": 1507,
+              "SLEEP_CrudePrev": 48.2
+            },
+            {
+              "StateAbbr": "NY",
+              "StateDesc": "New York",
+              "CountyName": "Albany",
+              "CountyFIPS": "36001",
+              "TractFIPS": "36001000201",
+              "TotalPopulation": 3125,
+              "TotalPop18plus": 2314,
+              "SLEEP_CrudePrev": 46.2
+            },
+            {
+              "StateAbbr": "NY",
+              "StateDesc": "New York",
+              "CountyName": "Albany",
+              "CountyFIPS": "36001",
+              "TractFIPS": "36001000202",
+              "TotalPopulation": 2598,
+              "TotalPop18plus": 1756,
+              "SLEEP_CrudePrev": 49.8
+            },
+            {
+              "StateAbbr": "NY",
+              "StateDesc": "New York",
+              "CountyName": "Albany",
+              "CountyFIPS": "36001",
+              "TractFIPS": "36001000301",
+              "TotalPopulation": 3190,
+              "TotalPop18plus": 2189,
+              "SLEEP_CrudePrev": 48.1
+            },
+            {
+              "StateAbbr": "NY",
+              "StateDesc": "New York",
+              "CountyName": "Albany",
+              "CountyFIPS": "36001",
+              "TractFIPS": "36001000302",
+              "TotalPopulation": 3496,
+              "TotalPop18plus": 2956,
+              "SLEEP_CrudePrev": 37.3
+            }
+          ],
+          "stats": {
+            "tractCount": 5289,
+            "totalPopulation": 20200351,
+            "totalPop18plus": 16087481,
+            "perMeasure": {
+              "SLEEP": {
+                "min": 23.7,
+                "max": 57.5,
+                "mean": 38.7023,
+                "median": 38.1,
+                "n": 5289
+              }
+            }
+          },
+          "deliverable": {
+            "unit": "synthetic person, one row each",
+            "rowsPerTract": 3,
+            "rowCount": 15867,
+            "tractCount": 5289,
+            "everyTractRepresented": true,
+            "perTractStandardErrorPp": {
+              "SLEEP": 28.12
+            },
+            "perTractRatesSupported": false,
+            "note": "Every one of the 5,289 matched tracts gets 3 row(s). One tract's rate at that density carries the standard error above, so this file is for person-level work over the slice — not for ranking individual tracts. For a tract's own rate, read the published CDC PLACES value: it is this file's input and it is free."
+          },
+          "note": "Free and non-committal. A signed, committed quote comes from the agent door."
+        }
+      }
+    },
+    "reject-unknown-column": {
+      "query": {
+        "columns": [
+          "DIABETES",
+          "toString"
+        ],
+        "states": [
+          "CA"
+        ]
+      },
+      "facts": {
+        "accepted": false,
+        "rejections": [
+          {
+            "code": "UNKNOWN_COLUMN",
+            "detail": "Not sold: toString. Available: DIABETES, BPHIGH, CHD, DEPRESSION, OBESITY, CSMOKING, ACCESS2, SLEEP."
+          }
+        ]
+      }
+    },
+    "reject-threshold-not-purchased": {
+      "query": {
+        "columns": [
+          "DIABETES"
+        ],
+        "states": [
+          "CA"
+        ],
+        "thresholds": {
+          "OBESITY": {
+            "min": 20
+          }
+        }
+      },
+      "facts": {
+        "accepted": false,
+        "rejections": [
+          {
+            "code": "THRESHOLD_ON_UNREQUESTED_COLUMN",
+            "detail": "OBESITY is not being purchased, so it cannot be filtered on."
+          }
+        ]
+      }
+    },
+    "reject-no-columns": {
+      "query": {
+        "states": [
+          "CA"
+        ]
+      },
+      "facts": {
+        "accepted": false,
+        "rejections": [
+          {
+            "code": "NO_COLUMNS_REQUESTED",
+            "detail": "At least one measure must be purchased."
+          }
+        ]
+      }
+    },
+    "reject-bad-state": {
+      "query": {
+        "columns": [
+          "DIABETES"
+        ],
+        "states": [
+          "ZZ"
+        ]
+      },
+      "facts": {
+        "accepted": false,
+        "rejections": [
+          {
+            "code": "STATE_NOT_AVAILABLE",
+            "detail": "\"ZZ\" is not in the 2025 release. The release covers 2 states and DC; US territories are not covered."
+          }
+        ]
+      }
+    },
+    "reject-population-filter": {
+      "query": {
+        "columns": [
+          "DIABETES"
+        ],
+        "states": [
+          "CA"
+        ],
+        "minPopulation": 2000.5
+      },
+      "facts": {
+        "accepted": false,
+        "rejections": [
+          {
+            "code": "POPULATION_FILTER_UNSUPPORTED",
+            "detail": "minPopulation must be a non-negative integer."
+          }
+        ]
+      }
+    },
+    "empty-slice": {
+      "query": {
+        "columns": [
+          "DIABETES"
+        ],
+        "states": [
+          "CA"
+        ],
+        "thresholds": {
+          "DIABETES": {
+            "min": 99
+          }
+        }
+      },
+      "facts": {
+        "accepted": true,
+        "units": 0,
+        "deliverableRowCount": 0,
+        "summary": "I can provide a 0-row synthetic dataset over 0 tracts — every tract represented. List price —.",
+        "body": {
+          "accepted": true,
+          "rejections": [],
+          "tractCount": 0,
+          "priceable": false,
+          "price": null,
+          "zeroYieldStates": [],
+          "sample": [],
+          "stats": {
+            "tractCount": 0,
+            "totalPopulation": 0,
+            "totalPop18plus": 0,
+            "perMeasure": {
+              "DIABETES": {
+                "min": 0,
+                "max": 0,
+                "mean": 0,
+                "median": 0,
+                "n": 0
+              }
+            }
+          },
+          "deliverable": null,
+          "note": "No tracts match. Nothing is priced, because an empty slice is not a product."
+        }
+      }
+    }
+  }
+}

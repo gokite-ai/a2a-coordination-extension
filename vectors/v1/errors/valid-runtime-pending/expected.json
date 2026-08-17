@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": true,
+  "wireMatchesCatalog": true,
+  "note": "The runtime is known and belongs to the expected Agent, but owner approval is still pending; the identical acceptance can succeed after activation."
+}

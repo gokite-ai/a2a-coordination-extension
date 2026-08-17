@@ -20,6 +20,7 @@
     "url": {
       "type": "string",
       "minLength": 1,
+      "format": "uri",
       "description": "Where the artifact can be retrieved. NOT authoritative: it may rot, move, or serve different bytes later, which is exactly why `hash` and not this member is what the delivery claim commits to."
     },
     "source": { "type": "string" },

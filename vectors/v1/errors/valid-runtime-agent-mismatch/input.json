@@ -1,0 +1,7 @@
+{
+  "code": "runtime_agent_mismatch",
+  "retriable": false,
+  "dealId": "deal_0123456789ab",
+  "runtimeKeyId": "did:kite:acme:buyer-17#buyer-runtime",
+  "actorAgentId": "did:kite:haiku:seller-3"
+}

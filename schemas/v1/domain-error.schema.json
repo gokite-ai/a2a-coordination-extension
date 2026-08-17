@@ -14,6 +14,13 @@
         "unsupported_extension_version",
         "invalid_signature",
         "unknown_key",
+        "runtime_key_required",
+        "runtime_not_found",
+        "runtime_pending",
+        "runtime_revoked",
+        "runtime_agent_mismatch",
+        "runtime_signature_mismatch",
+        "agreement_runtime_mismatch",
         "unauthorized_actor",
         "unknown_deal",
         "terms_hash_mismatch",
@@ -61,6 +68,22 @@
     "actorAgentId": {
       "type": "string",
       "description": "The actor the Runtime resolved, on unauthorized_actor and invalid_signature."
+    },
+    "runtimeKeyId": {
+      "type": "string",
+      "description": "The concrete runtime key selected by the request or Agreement signature. Present on runtime resolution, ownership, signature, and pinned-authority failures."
+    },
+    "expectedRuntimeKeyId": {
+      "type": "string",
+      "description": "The runtime key already pinned as the Agreement authority. Present on agreement_runtime_mismatch so the caller can rebuild the request under the correct runtime."
+    },
+    "runtimeStatus": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "revoked"
+      ],
+      "description": "The selected runtime's durable Identity status. Present on runtime_pending and runtime_revoked so clients can explain whether owner approval can repair the request."
     },
     "retryAfterSeconds": {
       "type": "integer",

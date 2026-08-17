@@ -1,0 +1,8 @@
+{
+  "code": "runtime_pending",
+  "retriable": true,
+  "dealId": "deal_0123456789ab",
+  "runtimeKeyId": "did:kite:haiku:seller-3#seller-runtime",
+  "actorAgentId": "did:kite:haiku:seller-3",
+  "runtimeStatus": "pending"
+}

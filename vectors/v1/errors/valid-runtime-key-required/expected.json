@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": false,
+  "wireMatchesCatalog": true,
+  "note": "Both party signatures must identify concrete runtime keys before acceptance can pin Agreement authority."
+}
