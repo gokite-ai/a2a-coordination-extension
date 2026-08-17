@@ -1,0 +1,6 @@
+{
+  "code": "runtime_not_found",
+  "retriable": false,
+  "dealId": "deal_0123456789ab",
+  "runtimeKeyId": "did:kite:haiku:seller-3#missing-runtime"
+}

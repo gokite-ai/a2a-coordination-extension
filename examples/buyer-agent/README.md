@@ -20,7 +20,7 @@ agreement flow, against a live example seller:
 
 **What it does not do.** It never submits to a Coordination Runtime. Steps 5
 and 6 print the signed objects and verify them locally; there is no `funding`,
-`funding-signatures`, `command` or `proofs` interaction sent, and no proof
+`funding-signatures`, `command`, `evidence-list` or `proofs` interaction sent, and no proof
 chain is fetched. Everything it exchanges over the wire goes to the example
 *seller*. That boundary is deliberate — the example demonstrates that the
 published schemas and signing rules are sufficient to CONSTRUCT correct

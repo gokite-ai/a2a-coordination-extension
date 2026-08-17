@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": false,
+  "wireMatchesCatalog": true,
+  "note": "runtimeKeyId identifies the exact unresolved runtime; the Runtime must not fall back to another active runtime owned by the same Agent DID."
+}

@@ -1,0 +1,273 @@
+{
+  "dataset": {
+    "datasetId": "cdc-places-2025-tract",
+    "title": "CDC PLACES — Census Tract Data, 2025 release (GIS-Friendly Format)",
+    "publisher": "Centers for Disease Control and Prevention (PLACES)",
+    "sellerIsPublisher": false,
+    "upstreamLicenceAsserted": false,
+    "grain": "us-census-tract",
+    "unitOfObservation": "modelled prevalence estimate, % of adults, per tract",
+    "containsIndividuals": false,
+    "estimateBasis": "BRFSS survey combined with census demographics; modelled, not measured — every published measure ships with a 95% CI",
+    "vintage": {
+      "release": "2025",
+      "surveyYear": null,
+      "denominatorVintage": null,
+      "tractGeographyVintage": null
+    },
+    "coverage": {
+      "tracts": 83522,
+      "states": 51,
+      "counties": 3143,
+      "totalPopulation": 331444902,
+      "totalPop18plus": 258340151,
+      "note": "50 states plus the District of Columbia. No US territories."
+    },
+    "measures": [
+      {
+        "key": "DIABETES",
+        "label": "Diagnosed diabetes",
+        "tier": "premium",
+        "denominator": "adults-18-plus",
+        "unavailableStates": [
+          "PA",
+          "KY"
+        ],
+        "definition": "% of adults 18+ ever told by a doctor they have diabetes (excludes gestational)."
+      },
+      {
+        "key": "BPHIGH",
+        "label": "High blood pressure",
+        "tier": "premium",
+        "denominator": "adults-18-plus",
+        "unavailableStates": [
+          "PA",
+          "KY"
+        ],
+        "definition": "% of adults 18+ ever told they have high blood pressure or hypertension."
+      },
+      {
+        "key": "CHD",
+        "label": "Coronary heart disease",
+        "tier": "premium",
+        "denominator": "adults-18-plus",
+        "unavailableStates": [
+          "PA",
+          "KY"
+        ],
+        "definition": "% of adults 18+ ever told they have angina or coronary heart disease."
+      },
+      {
+        "key": "DEPRESSION",
+        "label": "Depression",
+        "tier": "premium",
+        "denominator": "adults-18-plus",
+        "unavailableStates": [
+          "PA",
+          "KY"
+        ],
+        "definition": "% of adults 18+ ever told they have a depressive disorder."
+      },
+      {
+        "key": "OBESITY",
+        "label": "Obesity",
+        "tier": "standard",
+        "denominator": "adults-18-plus",
+        "unavailableStates": [
+          "PA",
+          "KY"
+        ],
+        "definition": "% of adults 18+ with body mass index 30.0+, from self-reported height and weight."
+      },
+      {
+        "key": "CSMOKING",
+        "label": "Current smoking",
+        "tier": "standard",
+        "denominator": "adults-18-plus",
+        "unavailableStates": [
+          "PA",
+          "KY"
+        ],
+        "definition": "% of adults 18+ who have smoked 100+ cigarettes in their life and now smoke every day or some days."
+      },
+      {
+        "key": "ACCESS2",
+        "label": "No health insurance (ages 18-64)",
+        "tier": "standard",
+        "denominator": "adults-18-64",
+        "unavailableStates": [
+          "PA",
+          "KY"
+        ],
+        "definition": "% of adults aged 18-64 with no health insurance. NOTE the narrower 18-64 denominator: unlike every other measure here this EXCLUDES ages 65+, who are near-universally Medicare-covered."
+      },
+      {
+        "key": "SLEEP",
+        "label": "Short sleep duration",
+        "tier": "standard",
+        "denominator": "adults-18-plus",
+        "unavailableStates": [],
+        "definition": "% of adults 18+ reporting fewer than 7 hours of sleep per 24-hour period."
+      }
+    ],
+    "querySurface": {
+      "filters": [
+        "states",
+        "counties",
+        "minPopulation",
+        "thresholds"
+      ],
+      "thresholdRule": "a threshold may be set only on a measure being purchased — filtering on an unpurchased column would let a buyer probe the data for free",
+      "tractInclusionRule": "a tract is included only if EVERY purchased measure has a published value for it; CDC-suppressed values exclude the tract and are never zero-filled",
+      "availabilityIsExhaustive": "in the 2025 release, suppression of the eight sold measures is entirely state-level — zero tracts are partially suppressed. measures[].unavailableStates therefore describes availability completely, so a buyer can determine buyability from this card alone with no residual per-tract surprise. Re-verify on any future release before relying on it.",
+      "rejectionCodes": [
+        "NO_COLUMNS_REQUESTED",
+        "UNKNOWN_COLUMN",
+        "STATE_NOT_AVAILABLE",
+        "COUNTY_FILTER_UNSUPPORTED",
+        "POPULATION_FILTER_UNSUPPORTED",
+        "THRESHOLD_FILTER_UNSUPPORTED",
+        "THRESHOLD_ON_UNREQUESTED_COLUMN",
+        "THRESHOLD_RANGE_EMPTY"
+      ]
+    }
+  },
+  "prePurchaseSample": {
+    "price": "free",
+    "rows": 5,
+    "content": "real, unmodified, published CDC tract rows",
+    "perturbed": false,
+    "selection": "first matches in file order — reproducible, so the sample commitment is verifiable after the fact",
+    "alsoReturned": [
+      "aggregate statistics over the WHOLE matched slice",
+      "statsHash — committed before payment and re-checked at delivery",
+      "the itemised list price"
+    ]
+  },
+  "deliverable": {
+    "productId": "cdc-places-2025-synthetic-individuals",
+    "kind": "synthetic-individual-records",
+    "derivedFrom": "cdc-places-2025-tract",
+    "containsRealIndividuals": false,
+    "mediaType": "text/csv",
+    "manifestMediaType": "application/json",
+    "columns": "synthetic_person_id, source_tract_fips, source_county_name, source_state_abbr, age_band, one flag per purchased measure, is_synthetic",
+    "perRowMarker": {
+      "column": "is_synthetic",
+      "value": "true",
+      "onEveryRow": true
+    },
+    "provenanceSemantics": "source_tract_fips is the tract whose published percentages supplied this row's probabilities — provenance, NOT residence. It asserts nothing about where anyone lives.",
+    "method": "every tract in the slice receives rowsPerTract rows; any remainder goes to the largest tracts first by TotalPop18plus. Within a tract, each measure flag is an independent Bernoulli draw from that tract's published prevalence.",
+    "determinism": "stratified-marginal-bernoulli/v2, seeded per deal; the seed is published in the manifest",
+    "buyerCanRegenerate": true,
+    "limitations": [
+      "Marginal prevalences are reproduced; the JOINT distribution is not. Measure flags are drawn independently, so co-morbidity is absent. NOT sound for co-morbidity rates, multivariate models, or any interaction term — a model trained on this systematically understates joint risk.",
+      "Per-tract resolution is a function of ROWS PER TRACT, not of tracts purchased. Every tract in a purchased slice is guaranteed rowsPerTract rows; each row's flags are Bernoulli draws from that one tract's published prevalence, so a tract represented by r rows admits only r+1 distinct rates and its rate carries a standard error of 100*sqrt(p(1-p)/r) percentage points — at r=1 every tract reads exactly 0% or 100%, and at r=25 with p=12% it is still +/-6.5pp. Sound for slice-level marginals and for person-level work aggregated over many tracts; NOT sound for ranking or comparing individual tracts at any density this product offers.",
+      "The tract-level prevalences this file is generated FROM are the public CDC PLACES release, free to download, and they are the ceiling on its accuracy: no number of synthetic rows improves on its own input. If what you need is a tract's rate, read the published value. What this product adds is the thing the release does not contain — individual-level records, one row per person, with age bands and per-person condition flags whose marginals match the published rates by construction, generated deterministically from a published seed so the file can be reproduced and audited.",
+      "Fit for: microsimulation and agent-based models that need a population rather than a rate; capacity, catchment and queueing models over candidate sites; power analysis and study design needing person-level variance; privacy-safe person-level test data for pipelines that cannot hold real records. Not fit for: estimating or ranking tract prevalence (the free source is better), co-morbidity or any interaction term, age-specific rates.",
+      "age_band is illustrative, not estimated. PLACES publishes no age breakdown, so nothing calibrates it. It exists because the generator must know who is 65+ in order not to flag them uninsured.",
+      "ACCESS2 has an 18-64 denominator and is therefore always 0 for 65+ rows."
+    ],
+    "verification": {
+      "method": "buyer recomputes prevalences from the delivered bytes and compares against the manifest's calibration targets",
+      "tolerancePpFormula": "max(1, 4 * sqrt(p*(1-p)/n) * 100)",
+      "sigmaMultiple": 4,
+      "floorPp": 1,
+      "whyVarianceAware": "a flat band is 3 sigma for a rare measure and barely 2 sigma for a common one, so it would fail an honest generator on high-prevalence columns",
+      "slabSubstitutionCaughtBy": "exact comparison of the delivered manifest's sourceStatsHash against the statsHash committed at quote time"
+    },
+    "rowCountRule": "rowsPerTract x matchedTractCount",
+    "rowsPerTractDefault": 25,
+    "rowsPerTractMin": 1,
+    "rowsPerTractMax": 100,
+    "maxRowCount": 999999,
+    "perTractPrecision": {
+      "formula": "standardErrorPp = 100 * sqrt(p * (1 - p) / rowsPerTract)",
+      "sigmaMultiple": 1,
+      "unit": "hundredths of a percentage point (integers, because this card is hashed)",
+      "workedAtP12Hundredths": {
+        "1": 3250,
+        "3": 1876,
+        "10": 1028,
+        "25": 650
+      },
+      "note": "One sigma. Multiply by 3 for a 99.7% band. No offered density makes a single tract's rate rankable."
+    }
+  },
+  "rateCard": {
+    "model": "query-derived/v1",
+    "asset": "USDC",
+    "decimals": 6,
+    "computationUnit": "integer USD cents; converted to USDC minor units by x10000",
+    "baseCents": 100,
+    "perTractMicroCents": 0,
+    "perStandardColumnCents": 500,
+    "perPremiumColumnCents": 500,
+    "vintageMultiplierBps": 10000,
+    "formula": "tractsCents = round(tractCount * perTractMicroCents / 1000); subtotalCents = baseCents + tractsCents + standardColumnCount * perStandardColumnCents + premiumColumnCount * perPremiumColumnCents; listCents = round(subtotalCents * vintageMultiplierBps / 10000); listAmountMinor = listCents * 10000",
+    "rounding": "half-up to whole cents at the per-tract term and again at the vintage multiplier; USDC minor units are never rounded",
+    "columnChargeIndependentOfTractCount": true,
+    "unknownColumnChargedAs": "standard — but validateQuery rejects unknown keys before pricing is reached",
+    "workedExample": {
+      "computedAgainst": "cdc-places-2025-tract, full release",
+      "query": "states=[CA], counties=[Alameda, San Francisco], minPopulation=2000, thresholds={DIABETES:{min:9}}, columns=[DIABETES, BPHIGH, OBESITY, ACCESS2]",
+      "tractCount": 362,
+      "breakdownCents": {
+        "base": 100,
+        "tracts": 0,
+        "standardColumns": 1000,
+        "premiumColumns": 1000,
+        "subtotal": 2100
+      },
+      "listAmountMinor": "21000000",
+      "listAmountDisplay": "$21.00"
+    }
+  },
+  "terms": {
+    "template": "fixed_outcome/v1",
+    "resale": false,
+    "retentionDays": 365,
+    "attribution": null,
+    "permittedPurpose": null,
+    "deliverySeconds": 3600,
+    "acceptanceSeconds": 3600,
+    "partialDelivery": false,
+    "partialPayment": false,
+    "feesChargedByThirdParties": [],
+    "silencePastAcceptanceWindow": "auto-confirms in the seller’s favour at the delivery-confirmation window (fixed_outcome/v1 §3): a timely explicit on-chain rejection is what preserves the buyer’s refund path",
+    "prohibitedUse": "not for clinical, epidemiological, eligibility, or policy decisions about any real person. The rows are manufactured and the joint distribution is wrong (see deliverable.limitations).",
+    "usageRightsEnforcement": "contractual and auditable, NOT technical. resale, retentionDays and prohibitedUse are pinned in the signed agreement and every breach is attributable, but the software cannot prevent copying, resale, retention or misuse after delivery. Do not read these fields as DRM.",
+    "negotiationDimensions": {
+      "implemented": [
+        "geography",
+        "measures",
+        "prevalenceThresholds",
+        "price"
+      ],
+      "fixedForThisVersion": [
+        "resale=false",
+        "retentionDays=365"
+      ],
+      "notRepresentableYet": [
+        "permittedPurpose",
+        "copyPermission",
+        "deletionOrRemovalDuty",
+        "jurisdiction",
+        "exclusivity"
+      ]
+    },
+    "note": "deliverySeconds/acceptanceSeconds are advisory here: under fixed_outcome/v1 the five deadline windows are platform configuration read back through the funding interaction (§3.1), not terms the parties set. retentionDays is the buyer’s retention right — a license term, not an artifact-availability promise; availability is declared per deal in the signed terms document."
+  },
+  "artifactAccess": {
+    "model": "per-deal capability token, minted at delivery; the evidence URL carries it",
+    "revocation": "revoked on refund outcomes (CANCELLED, or RESOLVED with sellerBps=0); held for the terms document’s artifactAvailability window otherwise",
+    "durability": "demo-grade, process-local storage — disclosed, not promised away"
+  },
+  "disclosedRisk": "Off-chain delivery cannot be disproved on chain. A buyer that receives good data can reject it on protocol and keep the file. Under fixed_outcome/v1 that rejection is answerable: the seller may appeal (REJECTED → DISPUTED) and a third-party arbiter decides the split, and every command in the path is signed, public and permanently recorded. This example exercises the dispute paths against a fake Runtime in its test suite; its live validation covers the accepted path only.",
+  "termsDocument": {
+    "format": "kite-example-data-deal-terms/v1",
+    "commitment": "the contract’s acceptanceCriteria embeds the document’s JCS sha256 and a content-addressed locator; termsHash (§4.1) therefore covers it transitively",
+    "note": "demo-private convention, not Extension protocol"
+  }
+}

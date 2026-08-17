@@ -414,6 +414,41 @@
     },
     {
       "set": "errors",
+      "name": "valid-runtime-key-required",
+      "note": "one or both Agreement signatures omitted their runtime keyId"
+    },
+    {
+      "set": "errors",
+      "name": "valid-runtime-not-found",
+      "note": "the selected runtime key does not resolve"
+    },
+    {
+      "set": "errors",
+      "name": "valid-runtime-pending",
+      "note": "the selected runtime is pending and may be retried after activation"
+    },
+    {
+      "set": "errors",
+      "name": "valid-runtime-revoked",
+      "note": "the selected runtime was revoked permanently"
+    },
+    {
+      "set": "errors",
+      "name": "valid-runtime-agent-mismatch",
+      "note": "the selected runtime belongs to a different Agent DID"
+    },
+    {
+      "set": "errors",
+      "name": "valid-runtime-signature-mismatch",
+      "note": "the Agreement signature does not verify under its declared runtime key"
+    },
+    {
+      "set": "errors",
+      "name": "valid-agreement-runtime-mismatch",
+      "note": "the request used a runtime other than the authority pinned to the Agreement"
+    },
+    {
+      "set": "errors",
       "name": "valid-unauthorized-actor",
       "note": "a genuine signature from a party that does not own this command type"
     },

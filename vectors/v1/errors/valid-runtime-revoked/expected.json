@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": false,
+  "wireMatchesCatalog": true,
+  "note": "Revocation is permanent. The selected key cannot become Agreement authority, so retrying the identical acceptance cannot succeed."
+}

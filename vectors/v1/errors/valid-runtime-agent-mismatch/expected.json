@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": false,
+  "wireMatchesCatalog": true,
+  "note": "actorAgentId is the Agreement party expected to own runtimeKeyId; resolving the key to a different Agent is not recoverable by retrying the same request."
+}

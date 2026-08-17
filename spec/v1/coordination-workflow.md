@@ -228,9 +228,9 @@ a DealContract entry, `actorAgentId` for an AgreementCommand, the Runtime's DID
 for a receipt — and that identity **MUST** be an authorized participant for the
 action (buyer/seller/arbiter as the state permits). A `keyId` naming a different
 DID is rejected before key resolution. The fragment after `#` is the key's
-canonical thumbprint (§8), naming the specific key the signature is expected
-to recover to — the v1 normative check is agent-level, and matching the
-fragment-named key is a SHOULD (§8 states both precisely).
+canonical thumbprint (§8), naming the specific key the signature **MUST**
+recover to. Agent-level membership is insufficient when one Agent DID has
+multiple active runtimes.
 
 ### 4.1 DealContract and termsHash
 
@@ -286,6 +286,17 @@ Any changed contract member yields a different `termsHash` and is therefore a
 **new proposal**; it **MUST NOT** be treated as acceptance, and it invalidates
 the previous acceptance path.
 
+**Acceptance pins party runtime authorities.** A buyer or seller Agent DID may
+have multiple active runtimes, each independently executing a different
+agreement. The final two-signature contract selects the buyer and seller
+runtime keys through each party's `signatures[].keyId`. Before committing acceptance, the Runtime
+**MUST** resolve each exact key, verify that it is active and belongs to the
+declared party DID, and verify that party's `agreementSig` under the resolved
+EVM address. The accepted agreement persists both key IDs and addresses.
+Subsequent commands and settlement signatures **MUST** use the authority pinned
+for that party and agreement; a Runtime **MUST NOT** repeat a DID-to-single-key
+lookup or silently rotate an agreement when another runtime becomes active.
+
 **`runtimeBinding` pins the execution context**: `runtimeAgentId`,
 `agentCardHash`, `extensionUri` (fixed to this Extension's URI), `endpoint`, and
 the Audit policy. Redirecting an accepted agreement to another Runtime,
@@ -302,12 +313,22 @@ dispute, which is the exact capture `disputePolicy` exists to prevent.
 Activation address field (§4.4, `address arbiter`) and therefore one of the
 inputs the settlement layer hashes into the deal id — so the arbiter is not a
 name held in reserve until a dispute. A Runtime **MUST** resolve the named
-arbiter to its settlement address when the proposal is made, exactly as it
-resolves the buyer and seller agents, and **MUST** refuse a proposal whose
-arbiter has no single resolvable on-chain address (an unregistered agent, or
-one with no active settlement key). Deferring the check to dispute time is
-too late: an unresolvable arbiter cannot be placed in the Activation, so no
-deal id can be formed and the agreement could never have been funded.
+arbiter to its settlement address when the proposal is made and **MUST** refuse
+a proposal whose arbiter has no single resolvable on-chain address (an
+unregistered agent, no active settlement key, or more than one active runtime).
+The Runtime **MUST** persist that resolved address as part of the proposed
+agreement, use it when constructing `Activation.arbiter`, and **MUST NOT**
+repeat the DID-to-address lookup after proposal. An `arbiter_decided` command's
+exact `keyId` **MUST** resolve to that pinned address; a later runtime under the
+same Agent DID does not inherit authority over an agreement it was not formed
+under.
+Unlike buyer and seller authorities, v1 does not carry an
+`arbiterRuntimeKeyId`; multi-runtime selection is therefore deliberately scoped
+to agreement parties. An arbiter operator that needs several runtimes MUST use
+distinct Agent DIDs, one per settlement authority. Deferring the check to
+dispute time is too late: an unresolvable arbiter cannot be placed in the
+Activation, so no deal id can be formed and the agreement could never have
+been funded.
 
 **On the Kite deployment, the arbiter is the Coordination Engine.** Parties
 transacting on Kite's own Runtime name
@@ -443,10 +464,10 @@ tag. On receipt a Runtime **MUST**:
 2. independently recompute every claimed hash: `termsHash` from the stored
    contract, `payloadHash` from `rfc8785(payload)` (rejecting a mismatch as
    `payload_hash_mismatch`), evidence refs from validated intake;
-3. resolve `signature.keyId` per §8, recover the signer address from
-   `signature.sig`, and require it to be an **active authorized key of the
-   DID the `keyId` names** (the v1 normative check; matching the exact
-   fragment-named key, and command-time validity, are §8's SHOULDs);
+3. resolve the exact `signature.keyId` per §8, recover the signer address from
+   `signature.sig`, require it to equal that active key's address, and, for a
+   buyer or seller, require the key to equal the authority pinned for that
+   party at agreement acceptance;
 4. verify the actor is a participant and authorized for this `commandType`;
 5. check `expectedRevision` against the deal's current revision;
 6. apply the transition **atomically** with its Audit outbox write.
@@ -752,6 +773,7 @@ The decoded `raw` object carries a `kind`:
 | `funding` | Read the Activation to sign and which artifacts have arrived | signed envelope (§6.2.1) | either party |
 | `funding-signatures` | Deliver this party's funding artifacts | signed envelope + `submission` | either party, own fields only |
 | `evidence` | Register a delivery artifact against the agreement | signed envelope + `submission` | **seller only** |
+| `evidence-list` | Resolve proof evidence ids to artifact URLs and verification metadata | signed envelope (§6.2.1) | either party |
 | `proofs` | Read the transition-proof chain | signed envelope (§6.2.1) | either party |
 
 #### 6.2.1 Party-scoped interactions
@@ -761,9 +783,12 @@ Schema: `schemas/v1/party-envelope.schema.json`
 `submission` payloads are `schemas/v1/funding-submission.schema.json` and
 `schemas/v1/evidence-submission.schema.json`.
 
-`funding`, `funding-signatures`, `evidence` and `proofs` are **party-only**.
-Each carries a signed envelope; the Runtime **MUST** reject a request whose
-signature does not verify, or whose actor is not a party to the named deal.
+`funding`, `funding-signatures`, `evidence`, `evidence-list` and `proofs` are
+**party-only**. Each carries a signed envelope; the Runtime **MUST** reject a
+request whose signature does not verify, or whose actor is not a party to the
+named deal. `evidence` remains seller-only for writes; `evidence-list` is a
+read available to either party, so a buyer can resolve a proof's `evidenceId`
+to the registered `url`, `hash`, and verification metadata before accepting.
 
 ```json
 { "kind": "funding-signatures",
@@ -863,6 +888,7 @@ The decoded reply payload is:
 - `funding` → `{ "kind": "agreement-funding", "funding": … }`;
 - `funding-signatures` → `{ "kind": "agreement-funding-accepted", "status": … }`;
 - `evidence` → `{ "kind": "agreement-evidence-recorded", "evidenceId": "…" }`;
+- `evidence-list` → `{ "kind": "agreement-evidence", "evidence": [ … ] }`;
 - `proofs` → `{ "kind": "agreement-proofs", "proofs": [ … ] }`, whose elements
   are `AgreementTransitionProof` objects
   (`schemas/v1/transition-proof.schema.json`).
@@ -1126,8 +1152,8 @@ vendored the catalog still retries correctly.
 
 | Code | Retriable |
 |---|---|
-| `invalid_command_schema`, `unsupported_extension_version`, `invalid_signature`, `unknown_key`, `unauthorized_actor`, `unknown_deal`, `terms_hash_mismatch`, `payload_hash_mismatch`, `idempotency_conflict`, `illegal_transition`, `deadline_exceeded`, `evidence_not_validated` | no |
-| `revision_conflict`, `funding_not_final`, `rate_limited`, `internal_error` | yes |
+| `invalid_command_schema`, `unsupported_extension_version`, `invalid_signature`, `unknown_key`, `runtime_key_required`, `runtime_not_found`, `runtime_revoked`, `runtime_agent_mismatch`, `runtime_signature_mismatch`, `agreement_runtime_mismatch`, `unauthorized_actor`, `unknown_deal`, `terms_hash_mismatch`, `payload_hash_mismatch`, `idempotency_conflict`, `illegal_transition`, `deadline_exceeded`, `evidence_not_validated` | no |
+| `runtime_pending`, `revision_conflict`, `funding_not_final`, `rate_limited`, `internal_error` | yes |
 
 `revision_conflict` is the retriable case implementers most often get wrong:
 refetch state, rebuild the command with the current revision, and use a **new**
@@ -1154,31 +1180,21 @@ receipts, so changing it would invalidate every stored reference. (The receipt
 schema constrains `keyId` to this shape.)
 
 **What v1 verification guarantees — precisely.** Resolving a `keyId` through
-Identity's public resolve surface yields secp256k1 keys as on-chain EVM
-addresses (keccak256-derived). Verification recovers the signer from the
-`secp256k1-keccak-v1` signature, and a verifier:
+Identity's public resolve surface yields the named secp256k1 key as its
+keccak256-derived on-chain EVM address. Verification **MUST** recover the signer
+from the `secp256k1-keccak-v1` signature and require that address to equal the
+active key named by the `jkt` fragment. A verifier that accepts any other
+active key of the DID has authenticated the agent but not the authority the
+signed object selected.
 
-- **MUST** require the recovered address to be an **active authorized key of
-  the DID the `keyId` names** — this is the v1 normative guarantee: *the
-  signer is an authorized key of the named agent*. Do not build a policy that
-  depends on WHICH of an agent's keys signed.
-- **SHOULD** additionally require the recovered address to equal the address
-  of the specific key the `jkt` fragment names. This strict binding is the
-  intended end state and the fragment exists so it can be checked, but the
-  Kite reference implementation does not enforce it in v1 (an agent with two
-  active runtimes can sign with either), so an implementation **MUST NOT** be
-  judged non-conforming for accepting any active key of the named agent.
-
-**One secp256k1 key per agent, for everything Kite-native.** An agent's
-runtime key — established when the agent runtime is bound — is the single key
-that signs its L4 bind proof, its A2A formation and command signatures (this
-profile), and its EscrowVault EIP-712 settlement signatures. (Session
-proof-of-possession reuses it once the client stops minting a per-session key —
-a planned, not-yet-shipped change; today the session key is separate.) There
-is **no Ed25519 key** in the Kite-native path. Because both buyer and seller
-pass through runtime binding, both always hold a signable secp256k1 key, and
-the address it resolves to is exactly the party address the vault authorizes —
-so formation identity and settlement identity are provably the same key.
+**One secp256k1 key per runtime, for everything Kite-native.** A buyer or seller
+Agent DID may have several active runtimes. Each runtime's bound key signs that
+runtime's L4 proof, A2A formation and command signatures, and EscrowVault
+EIP-712 settlement signatures. There is **no Ed25519 key** in the Kite-native
+path. Agreement acceptance pins one runtime key per party for that agreement,
+so formation identity and settlement identity remain the same key without
+imposing a one-runtime-per-party-Agent restriction. The arbiter restriction is
+defined separately in §4.1 because v1 does not carry an arbiter runtime key.
 
 > UCP (Unified Commerce Protocol) is **out of scope** for v1 and may never be
 > offered. If a UCP Platform Profile is ever provided it requires EC **P-256**
@@ -1235,7 +1251,7 @@ SDK code.
 Two of the three release inputs are now met, and this section says exactly
 where each stands rather than leaving an implementer to find out.
 
-**Vectors — published.** `vectors/v1` carries 88 cases across eight sets:
+**Vectors — published.** `vectors/v1` carries 95 cases across eight sets:
 canonical bytes and hash derivation, signatures under every domain tag
 (including the cross-tag rejections), per-`commandType` schema conformance with
 both conflict shapes, the §6.2.1 funding-submission role-binding cases, the §6.3
@@ -1266,7 +1282,12 @@ the `fulfill_started` notification, autonomous delivery, buyer acceptance,
 on-chain settlement, and the transition-proof read. The validation used an
 external buyer participant, so the seller was exercised as a counterparty
 rather than against its own in-process test double. The exact scope and the
-uncovered branches are recorded in `conformance/live-validation.md`.
+uncovered branches are recorded in `conformance/live-validation.md`. The
+`evidence-list` read (§6.2) postdates that run: its response shape is
+schema-bound (`agreement-evidence` in the interaction-response schema) but no
+recorded live validation exercises it yet, and it carries no vector set —
+a Runtime implementer should treat it as schema-conformant, not
+interop-proven.
 
 **Conformance suite — partially runnable.** `conformance/run.py` executes the
 offline checks (bytes, hashes, signatures, schemas, receipts, settlement
@@ -1276,20 +1297,15 @@ concurrency and funding deal-identity cases in
 `conformance/transitions.json` are normative and complete, but they are
 properties of a Runtime holding an agreement and cannot be checked against a
 document; the live driver is not implemented in this release, and the runner
-reports them as skipped rather than as passes. The successful accepted-path
-interoperability run is evidence that the path works; it is not substituted
-for the branches it did not execute and is not reported as a conformance pass.
+reports them as skipped rather than as passes. The recorded accepted-path and
+seller-consented-refund interoperability runs are evidence that those paths
+work; they are not substituted for the branches they did not execute and are
+not reported as conformance passes.
 
 ### 9.2 v1 limitations
 
 These are **not** work-in-progress notes: they are the boundaries of what v1
 guarantees, and an implementer should design against them.
-
-- **Key binding is agent-level, not key-level.** The v1 normative guarantee
-  (§8) is that the signer is an *authorized key of the named agent*; matching
-  the specific key the `jkt` fragment names is a SHOULD the reference
-  implementation does not enforce. An agent with two active runtimes can sign
-  with either. Do not build a policy that depends on WHICH key signed.
 
 - **Verification is against current key validity, not validity at command
   time** (§8). A signature made under a key that has since been revoked will

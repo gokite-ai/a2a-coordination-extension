@@ -1,0 +1,99 @@
+{
+  "fixtureVersion": "v1",
+  "query": {
+    "columns": [
+      "DIABETES",
+      "BPHIGH"
+    ],
+    "states": [
+      "CA"
+    ],
+    "counties": [
+      "Alameda"
+    ]
+  },
+  "seed": "f306685165da772417e420d88314debe1459244580d62910c83f0f40aedc0e1a",
+  "rowsPerTract": 25,
+  "quotedStatsHash": "sha256:1c50aeb4f09fe8c019d8827b3b54f7ad544ebd6e089d528f8551adf0e5457bd2",
+  "manifest": {
+    "dealId": "deal_golden",
+    "productId": "cdc-places-2025-synthetic-individuals",
+    "criteria": {
+      "columns": [
+        "BPHIGH",
+        "DIABETES"
+      ],
+      "states": [
+        "CA"
+      ],
+      "counties": [
+        "Alameda"
+      ],
+      "minPopulation": null,
+      "thresholds": {}
+    },
+    "criteriaHash": "sha256:dd03f282aabf8bd17e74abe5ff67c49297f08f34dcb058ad8198e18dce538a76",
+    "sourceStatsHash": "sha256:1c50aeb4f09fe8c019d8827b3b54f7ad544ebd6e089d528f8551adf0e5457bd2",
+    "quotedStatsHash": "sha256:1c50aeb4f09fe8c019d8827b3b54f7ad544ebd6e089d528f8551adf0e5457bd2",
+    "statsMatchQuote": true,
+    "rowCount": 9400,
+    "density": {
+      "rowsPerTract": 25,
+      "tractCount": 376,
+      "tractsWithRows": 376,
+      "minRowsPerTract": 25,
+      "perTractStandardErrorPp": {
+        "DIABETES": 6.13,
+        "BPHIGH": 8.94
+      }
+    },
+    "columns": [
+      "DIABETES",
+      "BPHIGH"
+    ],
+    "header": [
+      "synthetic_person_id",
+      "source_tract_fips",
+      "source_county_name",
+      "source_state_abbr",
+      "age_band",
+      "has_diabetes",
+      "has_high_bp",
+      "is_synthetic"
+    ],
+    "seed": "f306685165da772417e420d88314debe1459244580d62910c83f0f40aedc0e1a",
+    "generator": {
+      "algorithm": "stratified-marginal-bernoulli/v2",
+      "prng": "sha256(seed|rowIndex|field), top 48 bits / 2^48 — counter-based, every draw independently addressable",
+      "weighting": "every tract gets 25 row(s); any remainder goes to the largest tracts first, by TotalPop18plus",
+      "limitations": [
+        "Marginal prevalences are reproduced; the JOINT distribution is not. Measure flags are drawn independently, so co-morbidity is absent. NOT sound for co-morbidity rates, multivariate models, or any interaction term.",
+        "Each row's flags are Bernoulli draws from ONE tract's published prevalence, so a tract represented by 25 row(s) admits only 26 distinct rates for any measure. This file is sound for slice-level marginals and for person-level work over many tracts; it is NOT sound for ranking or comparing individual tracts. For a tract's own rate, read the published CDC PLACES value — it is this file's input, and no number of synthetic rows improves on it.",
+        "age_band is illustrative, not estimated. PLACES publishes no age breakdown.",
+        "ACCESS2 has an 18-64 denominator and is therefore always 0 for 65+ rows."
+      ]
+    },
+    "calibration": [
+      {
+        "measure": "DIABETES",
+        "targetPercent": 10.4886,
+        "realizedPercent": 10.4894,
+        "denominatorRows": 9400,
+        "tolerancePp": 1,
+        "withinTolerance": true
+      },
+      {
+        "measure": "BPHIGH",
+        "targetPercent": 27.584,
+        "realizedPercent": 27.7872,
+        "denominatorRows": 9400,
+        "tolerancePp": 1.3829,
+        "withinTolerance": true
+      }
+    ],
+    "calibrated": true,
+    "artifactContentHash": "sha256:c35ce38fe19de541488e05f46444265d977cc657a65cf835b625ad545964ae11",
+    "artifactBytes": 475680,
+    "generatedAt": "2026-08-12T00:00:00.000Z"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "schemaValid": true,
+  "retriable": false,
+  "wireMatchesCatalog": true,
+  "note": "The received and pinned keys are both explicit so the caller can rebuild under the Agreement authority; the Runtime must not silently rotate authority."
+}

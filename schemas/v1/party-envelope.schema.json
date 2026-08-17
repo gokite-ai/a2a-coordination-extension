@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://a2a.gokite.ai/schemas/agreement-party-envelope/v1",
   "title": "Party-scoped interaction envelope",
-  "description": "The request object for the four party-only interactions — `funding`, `funding-signatures`, `evidence` and `proofs` (§6.2.1). Each names its actor and carries that actor's signature, because the transport in front of these is public: a transport credential authenticates the CALLER and MUST NOT substitute for the actor's signature (§4.2).\n\nThe Runtime MUST reject an envelope whose signature does not verify, and MUST check party membership against its OWN record of the agreement rather than against anything in this request.",
+  "description": "The request object for the party-only interactions — `funding`, `funding-signatures`, `evidence`, `evidence-list` and `proofs` (§6.2.1). Each names its actor and carries that actor's signature, because the transport in front of these is public: a transport credential authenticates the CALLER and MUST NOT substitute for the actor's signature (§4.2).\n\nThe Runtime MUST reject an envelope whose signature does not verify, and MUST check party membership against its OWN record of the agreement rather than against anything in this request.",
   "type": "object",
   "required": [
     "kind",
@@ -17,6 +17,7 @@
         "funding",
         "funding-signatures",
         "evidence",
+        "evidence-list",
         "proofs"
       ]
     },
@@ -34,7 +35,7 @@
     },
     "submission": {
       "type": "object",
-      "description": "The payload, required on `funding-signatures` (a FundingSubmission) and `evidence` (an EvidenceSubmission), and absent on the two read kinds. Which schema applies is pinned by `kind` below — leaving it an untyped object let an `evidence` envelope carry an arbitrary submission and still validate, which is exactly the shape a Runtime must not accept: funding artifacts are write-once, so a submission that validates here and is rejected later can already have wedged the deal."
+      "description": "The payload, required on `funding-signatures` (a FundingSubmission) and `evidence` (an EvidenceSubmission), and absent on the three read kinds. Which schema applies is pinned by `kind` below — leaving it an untyped object let an `evidence` envelope carry an arbitrary submission and still validate, which is exactly the shape a Runtime must not accept: funding artifacts are write-once, so a submission that validates here and is rejected later can already have wedged the deal."
     },
     "signature": {
       "type": "object",
@@ -55,7 +56,7 @@
         "sig": {
           "type": "string",
           "pattern": "^0x[0-9a-fA-F]{130}$",
-          "description": "Recoverable secp256k1 ECDSA signature over keccak256(\"kite:a2a-agreement:funding:v1\" ‖ rfc8785(envelope without \"signature\")). The domain tag is distinct from the terms tag (§4.1) and the command tag (§4.2) so a signature made for one can never be replayed as another — note that all four party interactions share this one funding tag, so `kind` being inside the signed bytes is what stops a `proofs` envelope from being replayed as a `funding-signatures` one."
+          "description": "Recoverable secp256k1 ECDSA signature over keccak256(\"kite:a2a-agreement:funding:v1\" ‖ rfc8785(envelope without \"signature\")). The domain tag is distinct from the terms tag (§4.1) and the command tag (§4.2) so a signature made for one can never be replayed as another — note that all five party interactions share this one funding tag, so `kind` being inside the signed bytes is what stops a `proofs` envelope from being replayed as a `funding-signatures` one."
         }
       }
     }
@@ -111,6 +112,7 @@
           "kind": {
             "enum": [
               "funding",
+              "evidence-list",
               "proofs"
             ]
           }

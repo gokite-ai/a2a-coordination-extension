@@ -1,0 +1,30 @@
+{
+  "name": "kite-example-data-seller-agent",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Non-normative example data seller agent for the A2A Kite Coordination Extension. A seller with a real deliverable: synthetic individual-level records over the public CDC PLACES 2025 release.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "test": "vitest run",
+    "verify": "npm run build && npm run test"
+  },
+  "//dependencies": "Deliberately no Kite dependency: official A2A SDK + generic crypto/JSON tooling only. @noble/curves is secp256k1 (recoverable ECDSA), @noble/hashes supplies keccak-256 and sha-256, canonicalize is RFC 8785 — ordinary ecosystem libraries rather than anything Kite-specific.",
+  "dependencies": {
+    "@a2a-js/sdk": "^1.0.1",
+    "@noble/curves": "^1.6.0",
+    "@noble/hashes": "^1.5.0",
+    "canonicalize": "^2.0.0",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.10.2",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

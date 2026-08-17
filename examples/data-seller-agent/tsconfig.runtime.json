@@ -1,0 +1,12 @@
+{
+  "//": "The image-build emit config (Dockerfile stage 1). Development stays no-emit (tsx runs the sources; `npm run build` typechecks only); the container runs plain compiled JavaScript so the runtime image needs neither tsx nor the TypeScript compiler.",
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "dist",
+    "rootDir": "src",
+    "sourceMap": false,
+    "declaration": false
+  },
+  "include": ["src/**/*.ts"]
+}

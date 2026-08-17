@@ -1,27 +1,35 @@
 # Example agents (non-normative)
 
-Two self-contained Python agents demonstrating the Extension's objects and
-signing profiles. Together they provide a local peer demo; the seller also has
-a live mode that participates in a real agreement through a Coordination
-Runtime. See "Mode boundaries" below before reading either mode as a full
-conformance claim. They are documentation, not products — and deliberately
-**do not use any Kite SDK**: both are built on the official
-[`a2a-sdk`](https://pypi.org/project/a2a-sdk/) **1.x** (the A2A **1.0**
-generation: `raw` Parts with the Extension media type, the `A2A-Extensions`
-header both ways, `ROLE_USER`/`ROLE_AGENT`, the JSON-RPC binding) plus the
-schemas and test vectors in this bundle. Every settlement signature is a
-REAL §4.4 EIP-712 construction — `settlement.py` implements the profile from
-the spec alone, and the tests replay the published `settlement` vectors
-against it. That is the point: an existing A2A stack plus this bundle is
-sufficient to interoperate, down to the signatures the vault verifies.
+Three self-contained agents demonstrating the Extension's objects and
+signing profiles — two in Python, one in TypeScript. Together they provide
+local peer demos; both sellers also have a live mode that participates in a
+real agreement through a Coordination Runtime. See "Mode boundaries" below
+before reading either mode as a full conformance claim. They are documentation,
+not products — and deliberately **do not use any Kite SDK**. The Python agents
+use the official [`a2a-sdk`](https://pypi.org/project/a2a-sdk/) **1.x**; the
+TypeScript data seller uses the official
+[`@a2a-js/sdk`](https://www.npmjs.com/package/@a2a-js/sdk) **1.x**. Both are
+from the A2A **1.0** generation (`raw` Parts with the Extension media type,
+the `A2A-Extensions` header both ways, the corresponding role constants, and
+the JSON-RPC binding). Every settlement signature is a real §4.4 EIP-712
+construction. The buyer's `settlement.py` and the TypeScript seller's
+`settlement.ts` implement the profile from the spec alone, and their tests
+replay the published `settlement` vectors. The Python seller's implementation
+is exercised by its transport and live-coordination tests but does not replay
+the full vector set separately. That is the point: an existing A2A stack plus
+this bundle is sufficient to interoperate, down to the signatures the vault
+verifies.
 
 | Agent | Role |
 |---|---|
 | [`buyer-agent/`](buyer-agent/) | Construction-focused A2A **client**: negotiates with the seller, signs terms and the §4.4 Agreement, builds funding artifacts, verifies delivery, and builds a buyer decision. It does not submit Runtime interactions |
 | [`seller-agent/`](seller-agent/) | A2A **server + extension participant**: publishes an Agent Card declaring the Extension (`required: false`), countersigns accepted terms, and, in live mode, co-signs funding, registers evidence, and autonomously submits delivery through the Runtime |
+| [`data-seller-agent/`](data-seller-agent/) | TypeScript seller (on the official `@a2a-js/sdk` 1.x) with a **real deliverable**: synthetic records over the public CDC PLACES release. Query-derived pricing recomputed at countersign, a terms document pinned through `acceptanceCriteria`, the delivery manifest as the registered evidence artifact, capability-gated artifacts, and a buyer that regenerates the file byte-for-byte from the published seed. Its negotiation rides its own demo-private media type (`example-data-negotiation+json`) |
 
-Each agent duplicates its small `signing.py` on purpose — self-containment
-beats sharing here, so either directory can be read (or copied) alone.
+The examples keep their signing implementations local on purpose: the two
+Python agents each carry `signing.py`, and the TypeScript agent carries
+`signing.ts`. Self-containment beats sharing, so every directory can be read
+or copied alone.
 
 ## Two media types, and why
 
@@ -49,11 +57,12 @@ published vectors. Validating every published object against JSON Schema is
 `conformance/run.py`'s job; the agents additionally check the hashes and
 signatures they consume.
 
-Both agents still opt in to the Extension both ways on every negotiation
-request (the `A2A-Extensions` header and the message's `extensions` array,
-§2.2), and the seller refuses a request missing either: they are negotiating
-an agreement to be executed under the Extension, so declaring it is exactly
-what §2.2 asks — and it keeps the handshake a Runtime performs under test.
+Each buyer/seller negotiation pair opts in to the Extension both ways on every
+negotiation or contract-message request (the `A2A-Extensions` header and the
+message's `extensions` array, §2.2), and each seller refuses such a request
+when either declaration is missing. They are negotiating an agreement to be
+executed under the Extension, so declaring it follows §2.2 and keeps the
+handshake a Runtime performs under test.
 
 Signing addresses are exchanged in the demo's own `request-terms`/`terms`
 pair rather than inside any workflow object, since the §6.2 `proposal` branch

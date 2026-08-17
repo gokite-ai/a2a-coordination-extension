@@ -22,7 +22,7 @@
 </head>
 <body>
   <h1>A2A Kite Coordination Extension</h1>
-  <p class="draft"><strong>Release candidate — not yet v1.0.0.</strong> The complete accepted outcome path has executed against a live Runtime, including the deployed reference seller, escrow, autonomous delivery, settlement and the proof-chain read. Strict conformance remains open because the suite's 36 live cases have no driver yet (spec §9.1), so the bundle is interoperable on the validated path but not fully conformant or frozen.</p>
+  <p class="draft"><strong>Release candidate — not yet v1.0.0.</strong> The complete accepted outcome path and a seller-consented refund path have executed against a live Runtime, including real escrow, settlement, proof-chain reads and buyer balance restoration; the accepted path also covered the deployed reference seller and autonomous delivery. Strict conformance remains open because the suite's 36 live cases have no driver yet (spec §9.1), so the bundle is interoperable on the validated paths but not fully conformant or frozen.</p>
 
   <p>A versioned extension to the <a href="https://github.com/a2aproject/A2A">A2A protocol</a> that lets buyer and seller agents form and execute agreements through the Kite Coordination Engine: typed, signed workflow commands; two-signature agreement over one <code>termsHash</code>; runtime-signed transition receipts; party-readable transition-proof chains. (Independently verifiable audit proof packages are a later addition — spec §9.2.) No A2A fork, no Kite SDK required.</p>
 
@@ -33,9 +33,9 @@
     <tr><th>Artifact</th><th>Location</th></tr>
     <tr><td>Specification</td><td><a href="/spec/v1/coordination-workflow.md">spec/v1/coordination-workflow.md</a></td></tr>
     <tr><td>JSON Schemas</td><td><a href="/schemas/v1/deal-contract.schema.json">DealContract</a> · <a href="/schemas/v1/agreement-command.schema.json">AgreementCommand</a> · <a href="/schemas/v1/transition-receipt.schema.json">AgreementTransitionReceipt</a> · <a href="/schemas/v1/funding-submission.schema.json">FundingSubmission</a> · <a href="/schemas/v1/transition-proof.schema.json">AgreementTransitionProof</a> · <a href="/schemas/v1/error-catalog.json">error catalog</a> — canonical <code>.json</code> files; each also resolves at its bare <code>$id</code> path</td></tr>
-    <tr><td>Test vectors</td><td><a href="/vectors/v1/index.json">vectors/v1/index.json</a> — 88 cases; the index enumerates them with fixture keys and domain tags</td></tr>
+    <tr><td>Test vectors</td><td><a href="/vectors/v1/index.json">vectors/v1/index.json</a> — 95 cases; the index enumerates them with fixture keys and domain tags</td></tr>
     <tr><td>Conformance suite</td><td><a href="/conformance/README.md">conformance/README.md</a> · <a href="/conformance/run.py">run.py</a> · <a href="/conformance/transitions.json">transitions.json</a> · <a href="/conformance/live-validation.md">live validation coverage</a></td></tr>
-    <tr><td>Example agents (non-normative)</td><td><a href="https://github.com/gokite-ai/a2a-coordination-extension/tree/main/examples">examples/ on GitHub</a> — buyer + seller, no Kite code, A2A 1.0 raw-Part transport + real §4.4 settlement signatures; the seller also supports live Runtime execution</td></tr>
+    <tr><td>Example agents (non-normative)</td><td><a href="https://github.com/gokite-ai/a2a-coordination-extension/tree/main/examples">examples/ on GitHub</a> — Python buyer + seller and TypeScript data seller, no Kite code, A2A 1.0 raw-Part transport + real §4.4 settlement signatures; both sellers support live Runtime execution</td></tr>
   </table>
 
   <h2>Key identifiers</h2>
